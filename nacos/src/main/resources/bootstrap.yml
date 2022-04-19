@@ -1,0 +1,21 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: nacos
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: 192.168.0.103:8848
+        namespace: 164161c6-816e-4046-ae74-38692bf1d7f5
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always

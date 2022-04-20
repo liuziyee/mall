@@ -1,20 +1,23 @@
 server:
-  port: 8000
+  port: 7000
   servlet:
-    context-path: /nacos-service
+    context-path: /actuator-service
 
 spring:
   application:
-    name: nacos-service
+    name: actuator-service
   cloud:
     nacos:
       discovery:
         enabled: true
         server-addr: 119.23.145.52:8848
         namespace: 5f19ff8b-c429-4739-abdc-aabce1b9db8a
-        metadata:
+        metadata: 
           management:
             context-path: ${server.servlet.context-path}/actuator
+  thymeleaf:
+    check-template: false
+    check-template-location: false
 
 management:
   endpoints:
@@ -24,3 +27,4 @@ management:
   endpoint:
     health:
       show-details: always
+

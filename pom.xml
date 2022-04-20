@@ -11,6 +11,7 @@
         <module>common</module>
         <module>config</module>
         <module>nacos</module>
+        <module>actuator</module>
     </modules>
 
     <packaging>pom</packaging>

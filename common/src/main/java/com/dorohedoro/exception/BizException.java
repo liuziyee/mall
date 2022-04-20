@@ -1,4 +1,4 @@
-package com.dorohedoro.biz;
+package com.dorohedoro.exception;
 
 import com.dorohedoro.util.ResCode;
 

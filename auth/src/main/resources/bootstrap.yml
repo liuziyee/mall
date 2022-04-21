@@ -1,11 +1,11 @@
 server:
   port: 6000
   servlet:
-    context-path: /authority-service
+    context-path: /auth-service
 
 spring:
   application:
-    name: authority-service
+    name: auth-service
   cloud:
     nacos:
       discovery:

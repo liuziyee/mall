@@ -28,6 +28,5 @@ public class RSATest {
 
         log.info("private key: {}", Base64.encode(privateKey.getEncoded()));
         log.info("public key: {}", Base64.encode(publicKey.getEncoded()));
-        
     } 
 }

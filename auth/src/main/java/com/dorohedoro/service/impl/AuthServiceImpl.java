@@ -2,14 +2,14 @@ package com.dorohedoro.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.dorohedoro.constant.AuthConstant;
-import com.dorohedoro.constant.CommonConstant;
 import com.dorohedoro.dao.UserDao;
 import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.exception.BizException;
-import com.dorohedoro.service.IJWTService;
+import com.dorohedoro.service.IAuthService;
 import com.dorohedoro.util.BeanUtil;
-import com.dorohedoro.util.ResCode;
+import com.dorohedoro.constant.ResCode;
+import com.dorohedoro.util.JWTUtil;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
@@ -30,44 +30,29 @@ import java.util.UUID;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-@Slf4j
-public class JWTServiceImpl implements IJWTService {
+public class AuthServiceImpl implements IAuthService {
     @Autowired
     private UserDao userDao;
     
     @Override
-    public String generateToken(User userBO) throws Exception {
-        return generateToken(userBO, 0);
+    public String login(User userBO) throws Exception {
+        return login(userBO, 0);
     }
 
     @Override
-    public String generateToken(User userBO, int expire) throws Exception {
+    public String login(User userBO, Integer expire) throws Exception {
         User user = userDao.findByUsernameAndPassword(userBO.getUsername(), userBO.getPassword());
         if (user == null) {
             throw new BizException(ResCode.login);
         }
 
-        if (expire <= 0) {
-            expire = AuthConstant.DEFAULT_EXPIRE_DAY;
-        }
-
         UserDTO userDTO = BeanUtil.copy(user, UserDTO.class);
 
-        // 计算过期时间
-        ZonedDateTime zonedDateTime = LocalDate.now().plus(expire, ChronoUnit.DAYS)
-                .atStartOfDay(ZoneId.systemDefault());
-        Date expireDate = Date.from(zonedDateTime.toInstant());
-
-        return Jwts.builder()
-                .claim(CommonConstant.JWT_USER_INFO_KEY, JSON.toJSONString(userDTO))
-                .setId(UUID.randomUUID().toString())
-                .setExpiration(expireDate)
-                .signWith(getPrivateKey(), SignatureAlgorithm.RS256)
-                .compact();
+        return JWTUtil.generateToken(expire, JSON.toJSONString(userDTO));
     }
 
     @Override
-    public String registerAndGenerateToken(User userBO) throws Exception {
+    public String register(User userBO) throws Exception {
         User oldUser = userDao.findByUsername(userBO.getUsername());
         if (oldUser != null) {
             throw new BizException(ResCode.user_exists);
@@ -77,16 +62,17 @@ public class JWTServiceImpl implements IJWTService {
         user.setUsername(userBO.getUsername());
         user.setPassword(userBO.getPassword());
         user.setExtraInfo("{}");
-
         user = userDao.save(user);
-        log.info("register success: {}", JSON.toJSONString(user));
-        return generateToken(userBO);
+        
+        UserDTO userDTO = BeanUtil.copy(user, UserDTO.class);
+        return JWTUtil.generateToken(0, JSON.toJSONString(userDTO));
     }
 
     public PrivateKey getPrivateKey() throws Exception {
-        PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
-                new BASE64Decoder().decodeBuffer(AuthConstant.PRIVATE_KEY));
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(
+                new BASE64Decoder().decodeBuffer(AuthConstant.PRIVATE_KEY)
+        );
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+        return keyFactory.generatePrivate(keySpec);
     }
 }

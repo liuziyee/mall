@@ -2,10 +2,10 @@ package com.dorohedoro.controller;
 
 import com.dorohedoro.annotation.IgnoreResponseData;
 import com.dorohedoro.entity.User;
-import com.dorohedoro.service.IJWTService;
+import com.dorohedoro.service.IAuthService;
 import com.dorohedoro.vo.JwtToken;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,21 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @Autowired
-    private IJWTService jwtService;
+    private IAuthService jwtService;
 
     @IgnoreResponseData
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public JwtToken login(@RequestBody User userBO) throws Exception {
         JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(jwtService.generateToken(userBO));
+        jwtToken.setToken(jwtService.login(userBO));
         return jwtToken;
     }
 
     @IgnoreResponseData
-    @RequestMapping("/register")
+    @PostMapping("/register")
     public JwtToken register(@RequestBody User userBO) throws Exception {
         JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(jwtService.registerAndGenerateToken(userBO));
+        jwtToken.setToken(jwtService.register(userBO));
         return jwtToken;
     }
 }

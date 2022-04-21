@@ -1,6 +1,6 @@
 package com.dorohedoro.exception;
 
-import com.dorohedoro.util.ResCode;
+import com.dorohedoro.constant.ResCode;
 
 public class BizException extends RuntimeException{
     private ResCode code;

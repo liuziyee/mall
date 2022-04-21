@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @EnableJpaAuditing
 @EnableDiscoveryClient
 @SpringBootApplication
-public class AuthorityApplication {
+public class AuthApplication {
     public static void main(String[] args) {
-        SpringApplication.run(AuthorityApplication.class, args);
+        SpringApplication.run(AuthApplication.class, args);
     }
 }

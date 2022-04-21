@@ -1,4 +1,4 @@
-package com.dorohedoro.util;
+package com.dorohedoro.constant;
 
 public enum ResCode {
     success(0L, "成功"),

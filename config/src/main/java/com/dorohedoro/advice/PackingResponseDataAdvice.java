@@ -2,7 +2,7 @@ package com.dorohedoro.advice;
 
 import com.dorohedoro.annotation.IgnoreResponseData;
 import com.dorohedoro.vo.ResponseBean;
-import com.dorohedoro.util.ResCode;
+import com.dorohedoro.constant.ResCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;

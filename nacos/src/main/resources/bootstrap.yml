@@ -14,8 +14,9 @@ spring:
         namespace: 5f19ff8b-c429-4739-abdc-aabce1b9db8a
         metadata:
           management:
+            # 指定actuator端点的访问路径
             context-path: ${server.servlet.context-path}/actuator
-
+# 暴露端点
 management:
   endpoints:
     web:

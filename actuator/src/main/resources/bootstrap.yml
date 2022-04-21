@@ -6,6 +6,10 @@ server:
 spring:
   application:
     name: actuator-service
+  security:
+    user:
+      name: root
+      password: root
   cloud:
     nacos:
       discovery:
@@ -15,6 +19,9 @@ spring:
         metadata: 
           management:
             context-path: ${server.servlet.context-path}/actuator
+          user.name: root
+          user.password: root
+
   thymeleaf:
     check-template: false
     check-template-location: false

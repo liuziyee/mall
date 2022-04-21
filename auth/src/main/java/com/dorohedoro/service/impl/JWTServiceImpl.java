@@ -4,25 +4,21 @@ import com.alibaba.fastjson.JSON;
 import com.dorohedoro.constant.AuthConstant;
 import com.dorohedoro.constant.CommonConstant;
 import com.dorohedoro.dao.UserDao;
-import com.dorohedoro.dto.UserDto;
+import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.exception.BizException;
 import com.dorohedoro.service.IJWTService;
 import com.dorohedoro.util.BeanUtil;
 import com.dorohedoro.util.ResCode;
-import com.dorohedoro.vo.UsernameAndPassword;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sun.misc.BASE64Decoder;
 
-import java.io.IOException;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDate;
@@ -40,13 +36,13 @@ public class JWTServiceImpl implements IJWTService {
     private UserDao userDao;
     
     @Override
-    public String generateToken(String username, String password) throws Exception {
-        return generateToken(username, password, 0);
+    public String generateToken(User userBO) throws Exception {
+        return generateToken(userBO, 0);
     }
 
     @Override
-    public String generateToken(String username, String password, int expire) throws Exception {
-        User user = userDao.findByUsernameAndPassword(username, password);
+    public String generateToken(User userBO, int expire) throws Exception {
+        User user = userDao.findByUsernameAndPassword(userBO.getUsername(), userBO.getPassword());
         if (user == null) {
             throw new BizException(ResCode.login);
         }
@@ -55,7 +51,7 @@ public class JWTServiceImpl implements IJWTService {
             expire = AuthConstant.DEFAULT_EXPIRE_DAY;
         }
 
-        UserDto userDto = BeanUtil.copy(user, UserDto.class);
+        UserDTO userDTO = BeanUtil.copy(user, UserDTO.class);
 
         // 计算过期时间
         ZonedDateTime zonedDateTime = LocalDate.now().plus(expire, ChronoUnit.DAYS)
@@ -63,7 +59,7 @@ public class JWTServiceImpl implements IJWTService {
         Date expireDate = Date.from(zonedDateTime.toInstant());
 
         return Jwts.builder()
-                .claim(CommonConstant.JWT_USER_INFO_KEY, JSON.toJSONString(userDto))
+                .claim(CommonConstant.JWT_USER_INFO_KEY, JSON.toJSONString(userDTO))
                 .setId(UUID.randomUUID().toString())
                 .setExpiration(expireDate)
                 .signWith(getPrivateKey(), SignatureAlgorithm.RS256)
@@ -84,7 +80,7 @@ public class JWTServiceImpl implements IJWTService {
 
         user = userDao.save(user);
         log.info("register success: {}", JSON.toJSONString(user));
-        return generateToken(user.getUsername(), user.getPassword());
+        return generateToken(userBO);
     }
 
     public PrivateKey getPrivateKey() throws Exception {

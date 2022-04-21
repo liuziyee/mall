@@ -3,7 +3,7 @@ package com.dorohedoro.vo;
 import lombok.Data;
 
 @Data
-public class JWTToken {
+public class JwtToken {
 
     private String token;
 }

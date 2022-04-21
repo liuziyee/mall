@@ -1,7 +1,7 @@
 package com.dorohedoro.advice;
 
 import com.dorohedoro.annotation.IgnoreResponseData;
-import com.dorohedoro.dto.ResponseBean;
+import com.dorohedoro.vo.ResponseBean;
 import com.dorohedoro.util.ResCode;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;

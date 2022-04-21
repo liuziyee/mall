@@ -1,6 +1,6 @@
 package com.dorohedoro.advice;
 
-import com.dorohedoro.dto.ResponseBean;
+import com.dorohedoro.vo.ResponseBean;
 import com.dorohedoro.exception.BizException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

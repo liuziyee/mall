@@ -24,6 +24,6 @@ public class DaoTest {
         user.setUsername("liuziye");
         user.setPassword(MD5.create().digestHex("1994"));
         user.setExtraInfo("{}");
-        log.info("save user: [{}]", JSON.toJSONString(userDao.save(user)));
+        log.info("user record: {}", JSON.toJSONString(userDao.save(user)));
     }
 }

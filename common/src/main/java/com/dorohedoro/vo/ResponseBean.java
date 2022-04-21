@@ -1,4 +1,4 @@
-package com.dorohedoro.dto;
+package com.dorohedoro.vo;
 
 import lombok.Data;
 

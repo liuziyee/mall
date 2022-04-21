@@ -12,6 +12,7 @@
         <module>config</module>
         <module>nacos</module>
         <module>actuator</module>
+        <module>authority</module>
     </modules>
 
     <packaging>pom</packaging>

@@ -1,6 +1,5 @@
 package com.dorohedoro.service;
 
-import com.alibaba.fastjson.JSON;
 import com.dorohedoro.constant.AuthConstant;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.util.JWTUtil;
@@ -17,7 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Slf4j
 public class JWTTest {
     @Autowired
-    private IAuthService authService;
+    private ICheckInService authService;
     @Test
     public void generateTokenAndDecryptData() throws Exception {
         User user = new User();

@@ -1,11 +1,11 @@
 server:
   port: 7000
   servlet:
-    context-path: /actuator-service
+    context-path: /actuator
 
 spring:
   application:
-    name: actuator-service
+    name: actuator
   security:
     user:
       name: root

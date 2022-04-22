@@ -6,13 +6,10 @@ import com.dorohedoro.dao.UserDao;
 import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.exception.BizException;
-import com.dorohedoro.service.IAuthService;
+import com.dorohedoro.service.ICheckInService;
 import com.dorohedoro.util.BeanUtil;
 import com.dorohedoro.constant.ResCode;
 import com.dorohedoro.util.JWTUtil;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +18,10 @@ import sun.misc.BASE64Decoder;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.UUID;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class AuthServiceImpl implements IAuthService {
+public class CheckInServiceImpl implements ICheckInService {
     @Autowired
     private UserDao userDao;
     

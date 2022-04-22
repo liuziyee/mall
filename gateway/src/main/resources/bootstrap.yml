@@ -1,11 +1,11 @@
 server:
-  port: 8000
+  port: 6000
   servlet:
-    context-path: /nacos
+    context-path: /gateway
 
 spring:
   application:
-    name: nacos
+    name: gateway
   cloud:
     nacos:
       discovery:
@@ -14,9 +14,18 @@ spring:
         namespace: 5f19ff8b-c429-4739-abdc-aabce1b9db8a
         metadata:
           management:
-            # 指定actuator端点的访问路径
             context-path: ${server.servlet.context-path}/actuator
-# 暴露端点
+            
+  main:
+    allow-bean-definition-overriding: true
+
+nacos:
+  gateway:
+    route:
+      config:
+        data-id: gateway-router
+        group: DEFAULT_GROUP
+
 management:
   endpoints:
     web:

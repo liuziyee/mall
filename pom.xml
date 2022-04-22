@@ -13,6 +13,7 @@
         <module>nacos</module>
         <module>actuator</module>
         <module>auth</module>
+        <module>gateway</module>
     </modules>
 
     <packaging>pom</packaging>

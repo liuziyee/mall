@@ -28,7 +28,7 @@
         </dependency>
         <dependency>
             <groupId>com.dorohedoro</groupId>
-            <artifactId>config</artifactId>
+            <artifactId>mvc-config</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

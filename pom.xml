@@ -9,11 +9,12 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>common</module>
-        <module>config</module>
+        <module>mvc-config</module>
         <module>nacos</module>
         <module>actuator</module>
         <module>auth</module>
         <module>gateway</module>
+        <module>business</module>
     </modules>
 
     <packaging>pom</packaging>

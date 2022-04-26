@@ -7,10 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-public class TokenGatewayFilter implements GatewayFilter, Ordered {
+public class HeaderTokenGatewayFilter implements GatewayFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String token = exchange.getRequest().getHeaders().getFirst("token");
+        String token = exchange.getRequest().getHeaders().getFirst("dest");
         if ("gateway".equals(token)) {
             return chain.filter(exchange);
         }
@@ -21,6 +21,6 @@ public class TokenGatewayFilter implements GatewayFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return 0;
+        return HIGHEST_PRECEDENCE + 3;
     }
 }

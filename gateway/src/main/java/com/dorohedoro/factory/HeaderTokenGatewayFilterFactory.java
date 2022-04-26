@@ -1,14 +1,14 @@
 package com.dorohedoro.factory;
 
-import com.dorohedoro.filter.TokenGatewayFilter;
+import com.dorohedoro.filter.HeaderTokenGatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TokenAbstractGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
+public class HeaderTokenGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
     @Override
     public GatewayFilter apply(Object config) {
-        return new TokenGatewayFilter();
+        return new HeaderTokenGatewayFilter();
     }
 }

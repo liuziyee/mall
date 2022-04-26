@@ -7,7 +7,7 @@ public final class AuthConstant {
     
     public static final String KEY = "user-info";
 
-    public static final String AUTH_SERVICE_ID = "auth-service";
+    public static final String AUTH_SERVICE_ID = "auth";
 
     public static final Integer DEFAULT_EXPIRE_DAY = 1;
 }

@@ -15,5 +15,6 @@
     <description>业务模块</description>
     <modules>
         <module>business-config</module>
+        <module>account</module>
     </modules>
 </project>

@@ -62,7 +62,7 @@ public class GlobalCheckInFilter implements GlobalFilter, Ordered {
         }
 
         HttpHeaders headers = request.getHeaders();
-        String token = headers.getFirst("token");
+        String token = headers.getFirst(GatewayConstant.HEADER_TOKEN);
         if (StringUtils.isEmpty(token)) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();

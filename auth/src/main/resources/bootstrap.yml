@@ -36,6 +36,17 @@ spring:
       connection-timeout: 30000
       max-lifetime: 45000
       auto-commit: true
+      
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+#      table-prefix:
+#      logic-delete-field: deleted
+#      logic-delete-value: 1
+#      logic-not-delete-value: 0
 
 management:
   endpoints:

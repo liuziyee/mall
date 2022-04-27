@@ -1,7 +1,8 @@
-package com.dorohedoro.service;
+package com.dorohedoro.unit;
 
 import com.dorohedoro.constant.AuthConstant;
 import com.dorohedoro.entity.User;
+import com.dorohedoro.service.ICheckInService;
 import com.dorohedoro.util.JWTUtil;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;

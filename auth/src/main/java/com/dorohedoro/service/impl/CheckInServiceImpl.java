@@ -1,11 +1,12 @@
 package com.dorohedoro.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dorohedoro.constant.AuthConstant;
-import com.dorohedoro.dao.UserDao;
 import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.exception.BizException;
+import com.dorohedoro.mapper.UserMapper;
 import com.dorohedoro.service.ICheckInService;
 import com.dorohedoro.util.BeanUtil;
 import com.dorohedoro.constant.ResCode;
@@ -22,8 +23,9 @@ import java.security.spec.PKCS8EncodedKeySpec;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class CheckInServiceImpl implements ICheckInService {
+    
     @Autowired
-    private UserDao userDao;
+    private UserMapper userMapper;
     
     @Override
     public String login(User userBO) throws Exception {
@@ -32,7 +34,10 @@ public class CheckInServiceImpl implements ICheckInService {
 
     @Override
     public String login(User userBO, Integer expire) throws Exception {
-        User user = userDao.findByUsernameAndPassword(userBO.getUsername(), userBO.getPassword());
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("username", userBO.getUsername())
+                .eq("password", userBO.getPassword());
+        User user = userMapper.selectOne(wrapper);
         if (user == null) {
             throw new BizException(ResCode.login);
         }
@@ -44,7 +49,9 @@ public class CheckInServiceImpl implements ICheckInService {
 
     @Override
     public String register(User userBO) throws Exception {
-        User oldUser = userDao.findByUsername(userBO.getUsername());
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        wrapper.eq("username", userBO.getUsername());
+        User oldUser = userMapper.selectOne(wrapper);
         if (oldUser != null) {
             throw new BizException(ResCode.user_exists);
         }
@@ -53,7 +60,7 @@ public class CheckInServiceImpl implements ICheckInService {
         user.setUsername(userBO.getUsername());
         user.setPassword(userBO.getPassword());
         user.setExtraInfo("{}");
-        user = userDao.save(user);
+        userMapper.insert(user);
         
         UserDTO userDTO = BeanUtil.copy(user, UserDTO.class);
         return JWTUtil.generateToken(0, JSON.toJSONString(userDTO));

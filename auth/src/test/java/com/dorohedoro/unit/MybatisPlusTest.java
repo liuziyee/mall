@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.mapper.UserMapper;
@@ -15,6 +14,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Collections;
 
 @Slf4j
 @SpringBootTest
@@ -79,10 +80,16 @@ public class MybatisPlusTest {
     
     @Test
     public void selectPage() {
-        Page<User> page = new Page<>(1, 10);
+        //Page<User> page = new Page<>(1, 10);
+        //
+        //userMapper.selectPage(page, null);
+        //log.info("page data: {}", JSON.toJSONString(page));
 
-        userMapper.selectPage(page, null);
+        Page page = new Page(1, 10);
+
+        userMapper.selectPageByExtraInfo(page, "qq");
         log.info("page data: {}", JSON.toJSONString(page));
     }
+    
     
 }

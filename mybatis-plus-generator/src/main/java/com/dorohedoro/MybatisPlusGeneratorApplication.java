@@ -21,6 +21,7 @@ public class MybatisPlusGeneratorApplication implements ApplicationListener<Cont
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        log.info("ping...");
         FastAutoGenerator.create(
                 "jdbc:mysql://127.0.0.1:3306/mall?aotuReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC",
                 "root",
@@ -33,8 +34,9 @@ public class MybatisPlusGeneratorApplication implements ApplicationListener<Cont
                     builder.parent("com.dorohedoro")
                             .pathInfo(Collections.singletonMap(OutputFile.xml, "C://Users//liuzi//Desktop//mybatis-plus//com//dorohedoro"));
                 })
-                .strategyConfig(builder -> builder.addInclude("user"))
+                .strategyConfig(builder -> builder.addInclude("address"))
                 .templateEngine(new FreemarkerTemplateEngine())
                 .execute();
+        log.info("pong...");
     }
 }

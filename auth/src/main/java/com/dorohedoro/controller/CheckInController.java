@@ -3,7 +3,7 @@ package com.dorohedoro.controller;
 import com.dorohedoro.annotation.IgnoreResponseData;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.service.ICheckInService;
-import com.dorohedoro.vo.JwtToken;
+import com.dorohedoro.bean.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

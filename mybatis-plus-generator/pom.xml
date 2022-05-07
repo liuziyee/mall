@@ -29,7 +29,7 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <grolupId>org.springframework.cloud</grolupId>
+            <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-context</artifactId>
         </dependency>
     </dependencies>

@@ -1,9 +1,7 @@
 package com.dorohedoro.controller;
 
-import com.dorohedoro.annotation.IgnoreResponseData;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.service.ICheckInService;
-import com.dorohedoro.bean.JwtToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,19 +15,13 @@ public class CheckInController {
     @Autowired
     private ICheckInService checkInService;
     
-    @IgnoreResponseData
     @PostMapping("/login")
-    public JwtToken login(@RequestBody User userBO) throws Exception {
-        JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(checkInService.login(userBO));
-        return jwtToken;
+    public String login(@RequestBody User userBO) throws Exception {
+        return checkInService.login(userBO);
     }
 
-    @IgnoreResponseData
     @PostMapping("/register")
-    public JwtToken register(@RequestBody User userBO) throws Exception {
-        JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(checkInService.register(userBO));
-        return jwtToken;
+    public String register(@RequestBody User userBO) throws Exception {
+        return checkInService.register(userBO);
     }
 }

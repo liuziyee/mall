@@ -30,6 +30,14 @@ spring:
       max-lifetime: 45000
       auto-commit: true
 
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+  type-aliases-package: com.dorohedoro.entity
+
 management:
   endpoints:
     web:

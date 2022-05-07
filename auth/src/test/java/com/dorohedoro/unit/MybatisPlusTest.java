@@ -27,10 +27,11 @@ public class MybatisPlusTest {
     @Test
     public void createRecord() {
         User user = new User();
-        user.setUsername("liuziye");
+        user.setUsername("liuyee");
         user.setPassword("1994");
         user.setExtraInfo("{}");
         userMapper.insert(user);
+        log.info("user data: {}", JSON.toJSONString(user));
     }
     
     @Test

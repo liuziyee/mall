@@ -34,7 +34,7 @@ public class MybatisPlusGeneratorApplication implements ApplicationListener<Cont
                     builder.parent("com.dorohedoro")
                             .pathInfo(Collections.singletonMap(OutputFile.xml, "C://Users//liuzi//Desktop//mybatis-plus//com//dorohedoro"));
                 })
-                .strategyConfig(builder -> builder.addInclude("address"))
+                .strategyConfig(builder -> builder.addInclude("wallet"))
                 .templateEngine(new FreemarkerTemplateEngine())
                 .execute();
         log.info("pong...");

@@ -10,8 +10,8 @@ spring:
     nacos:
       discovery:
         enabled: true
-        server-addr: 119.23.145.52:8848
-        namespace: 5f19ff8b-c429-4739-abdc-aabce1b9db8a
+        server-addr: 124.223.190.166:8848
+        namespace: cc126b3c-efbb-4a95-b617-d0c1c192496d
         metadata:
           management:
             # 指定actuator端点的访问路径

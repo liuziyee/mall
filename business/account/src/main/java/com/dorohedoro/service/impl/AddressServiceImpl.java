@@ -2,15 +2,19 @@ package com.dorohedoro.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.dorohedoro.constant.ResCode;
 import com.dorohedoro.context.UserContext;
 import com.dorohedoro.dto.AddressDTO;
 import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.entity.Address;
+import com.dorohedoro.exception.BizException;
 import com.dorohedoro.mapper.AddressMapper;
 import com.dorohedoro.service.IAddressService;
 import com.dorohedoro.util.BeanUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -22,9 +26,6 @@ public class AddressServiceImpl implements IAddressService {
 
     @Override
     public Long createAddress(Address address) {
-        UserDTO userDTO = UserContext.getUserData();
-        address.setUid(userDTO.getId());
-
         addressMapper.insert(address);
         return address.getId();
     }
@@ -44,6 +45,9 @@ public class AddressServiceImpl implements IAddressService {
         wrapper.eq(Address::getId, id);
 
         Address address = addressMapper.selectOne(wrapper);
+        if (address == null) {
+            throw new BizException(ResCode.valid);
+        }
         return BeanUtil.copy(address, AddressDTO.class);
     }
 

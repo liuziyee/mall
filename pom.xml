@@ -10,7 +10,7 @@
     <modules>
         <module>common</module>
         <module>mvc-config</module>
-        <module>nacos</module>
+        <module>lab</module>
         <module>actuator</module>
         <module>auth</module>
         <module>gateway</module>

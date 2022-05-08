@@ -16,6 +16,21 @@ spring:
           management:
             # 指定actuator端点的访问路径
             context-path: ${server.servlet.context-path}/actuator
+            
+feign:
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 1024
+    response:
+      enabled: true
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+  
+
 # 暴露端点
 management:
   endpoints:

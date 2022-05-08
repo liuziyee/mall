@@ -9,8 +9,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 @EnableFeignClients
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
-public class NacosApplication {
+public class LabApplication {
     public static void main(String[] args) {
-        SpringApplication.run(NacosApplication.class, args);
+        SpringApplication.run(LabApplication.class, args);
     }
 }

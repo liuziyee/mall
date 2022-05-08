@@ -16,7 +16,7 @@ public class NacosController {
     @Autowired
     private NacosService nacosService;
 
-    @GetMapping("/service-instance/{id}")
+    @GetMapping("/service/{id}")
     public List<ServiceInstance> getServiceInstance(@PathVariable String id) {
         return nacosService.getServiceInstance(id);
     }

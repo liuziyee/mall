@@ -1,6 +1,5 @@
 package com.dorohedoro.controller;
 
-import com.dorohedoro.annotation.IgnorePackingResponseData;
 import com.dorohedoro.bean.ResponseBean;
 import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.service.AuthOpenFeignService;
@@ -9,7 +8,6 @@ import com.dorohedoro.service.RibbonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

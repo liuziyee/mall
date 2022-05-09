@@ -3,6 +3,7 @@ package com.dorohedoro.advice;
 import com.alibaba.fastjson.JSON;
 import com.dorohedoro.annotation.IgnorePackingResponseData;
 import com.dorohedoro.bean.ResponseBean;
+import com.dorohedoro.constant.GatewayConstant;
 import com.dorohedoro.constant.ResCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -34,6 +35,11 @@ public class PackingResponseDataAdvice implements ResponseBodyAdvice<Object> {
                                   Class<? extends HttpMessageConverter<?>> aClass, 
                                   ServerHttpRequest serverHttpRequest, 
                                   ServerHttpResponse serverHttpResponse) {
+        String uriPath = serverHttpRequest.getURI().getPath();
+        if (uriPath.contains(GatewayConstant.ACTUATOR_URI)) {
+            log.info("URI: {}, DATA: {}", uriPath, JSON.toJSONString(o));
+            return o;
+        }
         ResponseBean resBean = new ResponseBean();
         resBean.setCode(ResCode.success.getCode());
 
@@ -47,8 +53,8 @@ public class PackingResponseDataAdvice implements ResponseBodyAdvice<Object> {
         } else {
             resBean.setData(o);
         }
-
-        log.info("uri: {}, data: {}", serverHttpRequest.getURI().getPath(), JSON.toJSONString(resBean));
+        
+        log.info("URI: {}, DATA: {}", uriPath, JSON.toJSONString(resBean));
         return resBean;
     }
 }

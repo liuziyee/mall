@@ -23,27 +23,17 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class GlobalCheckInFilter implements GlobalFilter, Ordered {
 
-    //@Autowired
-    //private LoadBalancerClient loadBalancerClient;
-    //@Autowired
-    //private RestTemplate restTemplate;
-
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         ServerHttpResponse response = exchange.getResponse();
 
         String uriPath = request.getURI().getPath();
-        log.info("uriPath: {}", uriPath);
-        if (uriPath.contains(GatewayConstant.LOGIN_URI) || uriPath.contains(GatewayConstant.REGISTER_URI)) {
-            //String urlFormat = uriPath.contains(GatewayConstant.LOGIN_URI) ?
-            //        GatewayConstant.AUTH_LOGIN_URL_FORMAT :
-            //        GatewayConstant.AUTH_REGISTER_URL_FORMAT;
-            //String token = getTokenFromAuth(request, urlFormat);
-            //
-            //response.getHeaders().add("token", token == null ? null : token);
-            //response.setStatusCode(HttpStatus.OK);
-            //return response.setComplete();
+        log.info("URI: {}", uriPath);
+        if (StringUtils.containsAny(uriPath,  
+                GatewayConstant.LOGIN_URI,
+                GatewayConstant.REGISTER_URI,
+                GatewayConstant.ACTUATOR_URI)) {
             return chain.filter(exchange);
         }
 
@@ -73,39 +63,5 @@ public class GlobalCheckInFilter implements GlobalFilter, Ordered {
     public int getOrder() {
         return HIGHEST_PRECEDENCE + 2;
     }
-
-    //private String getRequestBodyData(ServerHttpRequest request) {
-    //    Flux<DataBuffer> body = request.getBody();
-    //    AtomicReference<String> bodyRef = new AtomicReference<>();
-    //
-    //    body.subscribe(buffer -> {
-    //        CharBuffer charBuffer = StandardCharsets.UTF_8.decode(buffer.asByteBuffer());
-    //        DataBufferUtils.release(buffer);
-    //        bodyRef.set(charBuffer.toString());
-    //    });
-    //
-    //    return bodyRef.get();
-    //}
-    //
-    //private String getTokenFromAuth(ServerHttpRequest request, String urlFormat) {
-    //    ServiceInstance authServiceInstance = loadBalancerClient.choose(AuthConstant.AUTH_SERVICE_ID);
-    //    log.info(String.format("auth service instance info: [service id: %s, instance id: %s, metadata: %s",
-    //            authServiceInstance.getServiceId(), authServiceInstance.getInstanceId(), authServiceInstance.getMetadata()));
-    //
-    //    String requestURL = String.format(urlFormat, authServiceInstance.getHost(), authServiceInstance.getPort());
-    //    String requestBodyData = getRequestBodyData(request);
-    //
-    //    HttpHeaders headers = new HttpHeaders();
-    //    headers.setContentType(MediaType.APPLICATION_JSON);
-    //    JwtToken token = restTemplate.postForObject(
-    //            requestURL, 
-    //            new HttpEntity<>(requestBodyData, headers), 
-    //            JwtToken.class);
-    //
-    //    if (token != null) {
-    //        return token.getToken();
-    //    }
-    //    return null;
-    //}
     
 }

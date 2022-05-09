@@ -4,6 +4,8 @@ public class GatewayConstant {
     public static final String LOGIN_URI = "/auth/checkin/login";
 
     public static final String REGISTER_URI = "/auth/checkin/register";
+    
+    public static final String ACTUATOR_URI = "/actuator";
 
     public static final String HEADER_TOKEN = "token";
             

@@ -49,5 +49,5 @@ group: DEFAULT_GROUP
                         }
                     }
                 ]
-            }
+        }
     ]

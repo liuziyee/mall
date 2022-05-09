@@ -27,6 +27,11 @@ spring:
     sender:
       type: kafka
     base-url: http://192.168.1.2:9411
+  
+  sleuth:
+    sampler:
+      rate: 10
+#      probability: 0.1
 
   main:
     allow-bean-definition-overriding: true
@@ -37,7 +42,6 @@ nacos:
       config:
         data-id: gateway-router
         group: DEFAULT_GROUP
-
 
 management:
   endpoints:

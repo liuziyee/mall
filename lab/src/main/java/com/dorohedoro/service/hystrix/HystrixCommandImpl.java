@@ -11,17 +11,17 @@ import java.util.List;
 import static com.netflix.hystrix.HystrixCommandProperties.ExecutionIsolationStrategy.THREAD;
 
 @Slf4j
-public class NacosHystrixCommand extends HystrixCommand<List<ServiceInstance>> {
+public class HystrixCommandImpl extends com.netflix.hystrix.HystrixCommand<List<ServiceInstance>> {
 
     private final NacosService nacosService;
     
     private final String serviceId;
     
-    public NacosHystrixCommand(NacosService nacosService, String serviceId) {
+    public HystrixCommandImpl(NacosService nacosService, String serviceId) {
         super(
-                Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("lab"))
-                        .andCommandKey(HystrixCommandKey.Factory.asKey("getServiceInstance"))
-                        .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("lab"))
+                HystrixCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Lab"))
+                        .andCommandKey(HystrixCommandKey.Factory.asKey("GetServiceInstanceCommand"))
+                        .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("Lab"))
                         .andCommandPropertiesDefaults(
                                 HystrixCommandProperties.Setter().
                                         withExecutionIsolationStrategy(THREAD)

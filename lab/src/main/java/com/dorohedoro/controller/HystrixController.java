@@ -2,10 +2,11 @@ package com.dorohedoro.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.dorohedoro.service.hystrix.HystrixAnnotation;
-import com.dorohedoro.service.hystrix.NacosHystrixCommand;
+import com.dorohedoro.service.hystrix.HystrixCommandImpl;
 import com.dorohedoro.service.NacosService;
-import com.dorohedoro.service.hystrix.cache.NacosUseCacheHystrixCommand;
+import com.dorohedoro.service.hystrix.cache.UseCacheHystrixCommandImpl;
 import com.dorohedoro.service.hystrix.cache.UseCacheHystrixAnnotation;
+import com.dorohedoro.service.hystrix.merge.HystrixCollapserImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -18,6 +19,7 @@ import rx.Observable;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
@@ -42,22 +44,22 @@ public class HystrixController {
 
     @GetMapping("/command/{id}")
     public List<ServiceInstance> getServiceInstanceByCommand(@PathVariable String id) throws ExecutionException, InterruptedException {
-        List<ServiceInstance> res = new NacosHystrixCommand(nacosService, id).execute();
+        List<ServiceInstance> res = new HystrixCommandImpl(nacosService, id).execute();
         log.info("use execute to call nacos service...");
         log.info("thread: {}, data: {}", Thread.currentThread().getName(), JSON.toJSONString(res));
 
-        Future<List<ServiceInstance>> future = new NacosHystrixCommand(nacosService, id).queue();
+        Future<List<ServiceInstance>> future = new HystrixCommandImpl(nacosService, id).queue();
         res = future.get();
         log.info("use queue to call nacos service...");
         log.info("thread: {}, data: {}", Thread.currentThread().getName(), JSON.toJSONString(res));
 
 
-        Observable<List<ServiceInstance>> Observable = new NacosHystrixCommand(nacosService, id).observe();
+        Observable<List<ServiceInstance>> Observable = new HystrixCommandImpl(nacosService, id).observe();
         res = Observable.toBlocking().single();
         log.info("use observe to call nacos service...");
         log.info("thread: {}, data: {}", Thread.currentThread().getName(), JSON.toJSONString(res));
 
-        rx.Observable<List<ServiceInstance>> toObservable = new NacosHystrixCommand(nacosService, id).toObservable();
+        rx.Observable<List<ServiceInstance>> toObservable = new HystrixCommandImpl(nacosService, id).toObservable();
         res = toObservable.toBlocking().single();
         log.info("use toObservable to call nacos service...");
         log.info("thread: {}, data: {}", Thread.currentThread().getName(), JSON.toJSONString(res));
@@ -67,16 +69,16 @@ public class HystrixController {
 
     @GetMapping("/cache-command/{id}")
     public void getServiceInstanceByCommandUseCache(@PathVariable String id) throws Exception {
-        NacosUseCacheHystrixCommand command1 = new NacosUseCacheHystrixCommand(nacosService, id);
-        NacosUseCacheHystrixCommand command2 = new NacosUseCacheHystrixCommand(nacosService, id);
+        UseCacheHystrixCommandImpl command1 = new UseCacheHystrixCommandImpl(nacosService, id);
+        UseCacheHystrixCommandImpl command2 = new UseCacheHystrixCommandImpl(nacosService, id);
 
         command1.execute();
         command2.execute();
 
-        NacosUseCacheHystrixCommand.flushCache(id);
+        UseCacheHystrixCommandImpl.flushCache(id);
 
-        NacosUseCacheHystrixCommand command3 = new NacosUseCacheHystrixCommand(nacosService, id);
-        NacosUseCacheHystrixCommand command4 = new NacosUseCacheHystrixCommand(nacosService, id);
+        UseCacheHystrixCommandImpl command3 = new UseCacheHystrixCommandImpl(nacosService, id);
+        UseCacheHystrixCommandImpl command4 = new UseCacheHystrixCommandImpl(nacosService, id);
 
         command3.execute();
         command4.execute();
@@ -92,6 +94,30 @@ public class HystrixController {
         useCacheHystrixAnnotation.getServiceInstance(id);
         useCacheHystrixAnnotation.getServiceInstance(id);
     }
+
+    @GetMapping("/merge-command/{id}")
+    public void getServiceInstanceByCommandUseMerge(@PathVariable String id) throws Exception {
+        new HystrixCollapserImpl(nacosService, id + 1).queue();
+        new HystrixCollapserImpl(nacosService, id + 2).queue();
+        new HystrixCollapserImpl(nacosService, id + 3).queue();
+        
+        TimeUnit.SECONDS.sleep(2);
+
+        new HystrixCollapserImpl(nacosService, id + 4).queue();
+    }
+
+    @GetMapping("/merge-annotation/{id}")
+    public void getServiceByAnnotationUseMerge(@PathVariable String id) throws Exception {
+        nacosService.getService(id + 1);
+        nacosService.getService(id + 2);
+        nacosService.getService(id + 3);
+        
+        TimeUnit.SECONDS.sleep(2);
+
+        nacosService.getService(id + 4);
+    }
+    
+    
     
 }
 

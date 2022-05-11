@@ -11,17 +11,17 @@ import java.util.Collections;
 import java.util.List;
 
 @Slf4j
-public class NacosUseCacheHystrixCommand extends HystrixCommand<List<ServiceInstance>> {
+public class UseCacheHystrixCommandImpl extends HystrixCommand<List<ServiceInstance>> {
 
     private final NacosService nacosService;
 
     private final String serviceId;
 
-    private static final HystrixCommandKey COMMAND_KEY = HystrixCommandKey.Factory.asKey("getServiceInstance");
+    private static final HystrixCommandKey COMMAND_KEY = HystrixCommandKey.Factory.asKey("GetServiceInstanceCommand");
 
-    public NacosUseCacheHystrixCommand(NacosService nacosService, String serviceId) {
+    public UseCacheHystrixCommandImpl(NacosService nacosService, String serviceId) {
         super(
-                Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("lab"))
+                HystrixCommand.Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("Lab"))
                         .andCommandKey(COMMAND_KEY)
         );
         

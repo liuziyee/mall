@@ -1,4 +1,4 @@
-package com.dorohedoro.service;
+package com.dorohedoro.service.rest;
 
 import com.alibaba.fastjson.JSON;
 import com.dorohedoro.bean.ResponseBean;

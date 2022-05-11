@@ -14,10 +14,10 @@ public class NacosService {
     private DiscoveryClient discoveryClient;
 
     public List<ServiceInstance> getServiceInstance(String serviceId) {
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-        }
+        //try {
+        //    TimeUnit.SECONDS.sleep(2);
+        //} catch (InterruptedException e) {
+        //}
         return discoveryClient.getInstances(serviceId);
     }
 }

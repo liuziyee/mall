@@ -1,5 +1,6 @@
-package com.dorohedoro.service;
+package com.dorohedoro.service.hystrix;
 
+import com.dorohedoro.service.NacosService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.extern.slf4j.Slf4j;
@@ -12,15 +13,15 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class HystrixAnnotationService {
+public class HystrixAnnotation {
     
     @Autowired
     private NacosService nacosService;
 
     @HystrixCommand(
-            groupKey = "NacosClientService",
-            commandKey = "NacosClientService",
-            threadPoolKey = "NacosClientService",
+            groupKey = "lab",
+            commandKey = "getServiceInstance",
+            threadPoolKey = "lab",
             fallbackMethod = "getServiceInstanceFallback",
             commandProperties = {
                     @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1500"),
@@ -44,7 +45,7 @@ public class HystrixAnnotationService {
 
     public List<ServiceInstance> getServiceInstanceFallback(String serviceId) {
         log.warn("something goes wrong when calling nacos service, trigger hystrix fallback...");
-        log.warn("service id: {}, thread: {}", serviceId, Thread.currentThread().getName());
+        log.warn("something goes wrong when calling nacos service, trigger hystrix fallback...");
         return Collections.emptyList();
     }
 }

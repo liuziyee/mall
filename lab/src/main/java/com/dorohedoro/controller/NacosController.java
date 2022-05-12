@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/nacos")
@@ -18,6 +19,7 @@ public class NacosController {
 
     @GetMapping("/service/{id}")
     public List<ServiceInstance> getServiceInstance(@PathVariable String id) {
+        //throw new RuntimeException();
         return nacosService.getServiceInstance(id);
     }
 }

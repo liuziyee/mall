@@ -22,6 +22,21 @@ spring:
         port: 3030
       eager: true
 
+feign:
+  sentinel:
+    enabled: true
+  compression:
+    request:
+      enabled: true
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 1024
+    response:
+      enabled: true
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+
 management:
   endpoints:
     web:

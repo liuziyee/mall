@@ -16,5 +16,5 @@ public interface AuthOpenFeignService {
     @PostMapping(value = "/auth/checkin/login",
             consumes = "application/json",
             produces = "application/json")
-    public ResponseBean login(@RequestBody UserDTO userDTO);
+    ResponseBean login(@RequestBody UserDTO userDTO);
 }

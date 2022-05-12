@@ -41,7 +41,9 @@ feign:
     enabled: true
   httpclient:
     enabled: false
-  
+  hystrix:
+    enabled: true
+
 
 # 暴露端点
 management:

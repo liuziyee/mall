@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.Resource;
 import java.util.Collections;
@@ -21,16 +19,16 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class HystrixAnnotation {
-    
-    @Autowired
-    private NacosService nacosService;
+public class AuthHystrixCommand {
+
+    @Resource
+    private AuthOpenFeignService authOpenFeignService;
 
     @HystrixCommand(
-            groupKey = "Lab",
-            commandKey = "GetServiceInstanceCommand",
-            threadPoolKey = "Lab",
-            fallbackMethod = "getServiceInstanceFallback",
+            groupKey = "Auth",
+            commandKey = "LoginCommand",
+            threadPoolKey = "Auth",
+            fallbackMethod = "loginFallback",
             commandProperties = {
                     @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1500"),
                     @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "10"),
@@ -45,14 +43,13 @@ public class HystrixAnnotation {
                     @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "1440")
             }
     )
-    public List<ServiceInstance> getServiceInstance(String serviceId) {
-        log.info("use hystrix annotation to call nacos service...");
-        log.info("service id: {}, thread: {}", serviceId, Thread.currentThread().getName());
-        return nacosService.getServiceInstance(serviceId);
+    public ResponseBean login(UserDTO userDTO) {
+        log.info("use hystrix annotation to call auth service...");
+        return authOpenFeignService.login(userDTO);
     }
 
-    public List<ServiceInstance> getServiceInstanceFallback(String serviceId) {
-        log.warn("something goes wrong when calling nacos service, trigger hystrix fallback...");
-        return Collections.emptyList();
+    public ResponseBean loginFallback(UserDTO userDTO) {
+        log.warn("something goes wrong when calling auth service, trigger hystrix fallback...");
+        throw new BizException(ResCode.service_error);
     }
 }

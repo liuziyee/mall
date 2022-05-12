@@ -8,7 +8,8 @@ public enum ResCode {
     login(40L, "用户名或密码错误"),
     unauthorized(50L, "无访问权限"),
     token_expire(60L, "token已过期"),
-    add_route_fail(70L, "写路由失败");
+    add_route_fail(70L, "写路由失败"),
+    service_error(80L, "服务异常");
 
     private Long code;
     private String desc;

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.TimeUnit;
+
 @RestController
 @RequestMapping("/checkin")
 public class CheckInController {
@@ -17,6 +19,8 @@ public class CheckInController {
     
     @PostMapping("/login")
     public String login(@RequestBody User userBO) throws Exception {
+        TimeUnit.SECONDS.sleep(3);
+        
         return checkInService.login(userBO);
     }
 

@@ -2,13 +2,15 @@ package com.dorohedoro.controller;
 
 import com.dorohedoro.bean.ResponseBean;
 import com.dorohedoro.dto.UserDTO;
-import com.dorohedoro.service.rest.AuthOpenFeignService;
-import com.dorohedoro.service.rest.RestTemplateService;
-import com.dorohedoro.service.rest.RibbonService;
+import com.dorohedoro.service.feign.AuthOpenFeignService;
+import com.dorohedoro.service.RestTemplateService;
+import com.dorohedoro.service.RibbonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 @RestController
 public class InterfaceCallingController {
@@ -19,7 +21,7 @@ public class InterfaceCallingController {
     @Autowired
     private RibbonService ribbonService;
 
-    @Autowired
+    @Resource
     private AuthOpenFeignService authOpenFeignService;
     
     @PostMapping("/rest/login")

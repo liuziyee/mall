@@ -1,6 +1,9 @@
 package com.dorohedoro.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.dorohedoro.bean.ResponseBean;
+import com.dorohedoro.dto.UserDTO;
+import com.dorohedoro.service.hystrix.AuthHystrixCommand;
 import com.dorohedoro.service.hystrix.HystrixAnnotation;
 import com.dorohedoro.service.hystrix.HystrixCommandImpl;
 import com.dorohedoro.service.NacosService;
@@ -10,12 +13,10 @@ import com.dorohedoro.service.hystrix.merge.HystrixCollapserImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import rx.Observable;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -35,10 +36,11 @@ public class HystrixController {
     @Autowired
     private UseCacheHystrixAnnotation useCacheHystrixAnnotation;
 
+    @Autowired
+    private AuthHystrixCommand authHystrixCommand;
+
     @GetMapping("/annotation/{id}")
     public List<ServiceInstance> getServiceInstanceByAnnotation(@PathVariable String id) {
-        log.info("call nacos service by postman...");
-        log.info("service id: {}, thread: {}", id, Thread.currentThread().getName());
         return hystrixAnnotation.getServiceInstance(id);
     }
 
@@ -100,7 +102,7 @@ public class HystrixController {
         new HystrixCollapserImpl(nacosService, id + 1).queue();
         new HystrixCollapserImpl(nacosService, id + 2).queue();
         new HystrixCollapserImpl(nacosService, id + 3).queue();
-        
+
         TimeUnit.SECONDS.sleep(2);
 
         new HystrixCollapserImpl(nacosService, id + 4).queue();
@@ -111,14 +113,16 @@ public class HystrixController {
         nacosService.getService(id + 1);
         nacosService.getService(id + 2);
         nacosService.getService(id + 3);
-        
+
         TimeUnit.SECONDS.sleep(2);
 
         nacosService.getService(id + 4);
     }
-    
-    
-    
+
+    @PostMapping("/feign/auth/login")
+    public ResponseBean login(@RequestBody UserDTO userDTO) {
+        return authHystrixCommand.login(userDTO);
+    }
 }
 
     

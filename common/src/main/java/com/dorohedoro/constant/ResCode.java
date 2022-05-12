@@ -9,7 +9,8 @@ public enum ResCode {
     unauthorized(50L, "无访问权限"),
     token_expire(60L, "token已过期"),
     add_route_fail(70L, "写路由失败"),
-    service_error(80L, "服务异常");
+    service_error(80L, "服务异常"),
+    sentinel_block(80L, "该请求被哨兵拦截");
 
     private Long code;
     private String desc;

@@ -16,6 +16,7 @@
         <module>gateway</module>
         <module>business</module>
         <module>mybatis-plus-generator</module>
+        <module>sentinel</module>
     </modules>
 
     <packaging>pom</packaging>

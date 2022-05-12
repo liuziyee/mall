@@ -1,0 +1,32 @@
+server:
+  port: 3000
+  servlet:
+    context-path: /sentinel
+
+spring:
+  application:
+    name: sentinel
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        server-addr: 124.223.190.166:8848
+        namespace: cc126b3c-efbb-4a95-b617-d0c1c192496d
+        metadata:
+          management:
+            context-path: ${server.servlet.context-path}/actuator
+            
+    sentinel:
+      transport:
+        dashboard: 192.168.1.2:9090
+        port: 3030
+      eager: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always

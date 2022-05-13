@@ -12,9 +12,8 @@ public class LabOpenFeignFallbackService implements LabOpenFeignService{
     @Override
     public ResponseBean getServiceInstance(String id) {
         log.warn("something goes wrong when calling getServiceInstance interface in lab service...");
-        ResponseBean resBean = new ResponseBean();
-        resBean.setCode(ResCode.service_error.getCode());
-        resBean.setMsg(ResCode.service_error.getDesc());
-        return resBean;
+        return new ResponseBean()
+                .setCode(ResCode.service_error.getCode())
+                .setMsg(ResCode.service_error.getDesc());
     }
 }

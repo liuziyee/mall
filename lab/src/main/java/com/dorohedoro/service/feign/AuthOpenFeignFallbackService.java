@@ -14,9 +14,8 @@ public class AuthOpenFeignFallbackService implements AuthOpenFeignService{
     @Override
     public ResponseBean login(UserDTO userDTO) {
         log.warn("something goes wrong when calling login interface in auth service...");
-        ResponseBean resBean = new ResponseBean();
-        resBean.setCode(ResCode.service_error.getCode());
-        resBean.setMsg(ResCode.service_error.getDesc());
-        return resBean;
+        return new ResponseBean()
+                .setCode(ResCode.service_error.getCode())
+                .setMsg(ResCode.service_error.getDesc());
     }
 }

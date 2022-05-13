@@ -16,11 +16,8 @@ public class AuthOpenFeignFallbackFactory implements FallbackFactory<AuthOpenFei
         log.warn("something goes wrong when calling login interface in auth service...");
         log.warn("error info: {}", throwable.getMessage(), throwable);
 
-        return (userDTO) -> {
-            ResponseBean resBean = new ResponseBean();
-            resBean.setCode(ResCode.service_error.getCode());
-            resBean.setMsg(ResCode.service_error.getDesc());
-            return resBean;
-        };
+        return (userDTO) -> new ResponseBean()
+                .setCode(ResCode.service_error.getCode())
+                .setMsg(ResCode.service_error.getDesc());
     }
 }

@@ -11,9 +11,8 @@ public class CommonExceptionAdvice {
     @IgnorePackingResponseData
     @ExceptionHandler(BizException.class)
     public ResponseBean handleBizException(BizException e) {
-        ResponseBean resBean = new ResponseBean();
-        resBean.setCode(e.getCode());
-        resBean.setMsg(e.getMsg());
-        return resBean;
+        return new ResponseBean()
+                .setCode(e.getCode())
+                .setMsg(e.getMsg());
     }
 }

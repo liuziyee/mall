@@ -63,47 +63,40 @@ public class SentinelGatewayConfig {
 
     @PostConstruct
     public void doInit() {
-        log.info("load gateway flow rules by hard code...");
-        initCustomizeApis();
-        initGatewayRules();
+        //log.info("load gateway flow rules by hard code...");
+        //initCustomizeApis();
+        //initGatewayRules();
 
         initBlockHandler();
     }
 
-    private void initCustomizeApis() {
-        Set<ApiDefinition> definitions = new HashSet<>();
-        ApiDefinition api1 = new ApiDefinition("lab-nacos-api")
-                .setPredicateItems(new HashSet<ApiPredicateItem>() {{
-                    add(new ApiPathPredicateItem()
-                            .setPattern("/gateway/lab/nacos/**")
-                            .setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
-                }});
-        definitions.add(api1);
-
-        GatewayApiDefinitionManager.loadApiDefinitions(definitions);
-    }
-
-    public void initGatewayRules() {
-        HashSet<GatewayFlowRule> rules = new HashSet<GatewayFlowRule>();
-
-        //rules.add(new GatewayFlowRule("lab")
-        //        .setResourceMode(SentinelGatewayConstants.RESOURCE_MODE_ROUTE_ID)
-        //        .setGrade(RuleConstant.FLOW_GRADE_QPS)
-        //        .setCount(3)
-        //        .setIntervalSec(1) // 统计时长
-        //);
-
-        rules.add(new GatewayFlowRule("lab-nacos-api")
-                .setResourceMode(SentinelGatewayConstants.RESOURCE_MODE_CUSTOM_API_NAME)
-                .setCount(1)
-                .setIntervalSec(1));
-
-        GatewayRuleManager.loadRules(rules);
-    }
+    //private void initCustomizeApis() {
+    //    Set<ApiDefinition> definitions = new HashSet<>();
+    //    ApiDefinition api1 = new ApiDefinition("lab-nacos-api")
+    //            .setPredicateItems(new HashSet<ApiPredicateItem>() {{
+    //                add(new ApiPathPredicateItem()
+    //                        .setPattern("/gateway/lab/nacos/**")
+    //                        .setMatchStrategy(SentinelGatewayConstants.URL_MATCH_STRATEGY_PREFIX));
+    //            }});
+    //    definitions.add(api1);
+    //
+    //    GatewayApiDefinitionManager.loadApiDefinitions(definitions);
+    //}
+    
+    //public void initGatewayRules() {
+    //    Set<GatewayFlowRule> rules = new HashSet<>();
+    //
+    //    rules.add(new GatewayFlowRule("lab-nacos-api")
+    //            .setResourceMode(SentinelGatewayConstants.RESOURCE_MODE_CUSTOM_API_NAME)
+    //            .setCount(1)
+    //            .setIntervalSec(1));
+    //
+    //    GatewayRuleManager.loadRules(rules);
+    //}
 
     private void initBlockHandler() {
         GatewayCallbackManager.setBlockHandler((serverWebExchange, throwable) -> {
-            log.warn("block exception happened and the resource is : {}", 
+            log.warn("blocked by sentinel and the resource is : {}", 
                     ((BlockException)throwable).getRule().getResource());
 
             Map<String, Object> bodyMap = new HashMap<>();

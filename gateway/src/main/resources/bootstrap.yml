@@ -21,7 +21,14 @@ spring:
         dashboard: 192.168.1.2:9090
         port: 6060
       eager: true
-            
+      datasource: 
+        rules.file:
+          file: classpath:sentinel-gateway-rules.json
+          ruleType: gw-flow
+        apis.file:
+          file: classpath:sentinel-gateway-apis.json
+          ruleType: gw-api-group
+          
   kafka:
     bootstrap-servers: 192.168.1.2:9092
     producer:

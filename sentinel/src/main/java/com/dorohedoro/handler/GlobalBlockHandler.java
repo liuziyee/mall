@@ -10,12 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalBlockHandler {
 
     public static String byHardCodeBlockHandler(BlockException e) {
-        log.warn("block exception happened and the rule is : {}", e.getRule());
+        log.warn("blocked by sentinel and the rule is : {}", e.getRule());
         throw new BizException(ResCode.blocked_by_sentinel);
     }
 
     public static ResponseBean byDashboardBlockHandler(String id, BlockException e) {
-        log.warn("block exception happened and the rule is : {}", e.getRule());
+        log.warn("blocked by sentinel and the rule is : {}", e.getRule());
         throw new BizException(ResCode.blocked_by_sentinel);
     }
 }

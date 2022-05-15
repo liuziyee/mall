@@ -1,0 +1,11 @@
+[
+  {
+    "apiName": "lab-nacos-api",
+    "predicateItems": [
+      {
+        "pattern": "/gateway/lab/nacos/**",
+        "matchStrategy": 1
+      }
+    ]
+  }
+]

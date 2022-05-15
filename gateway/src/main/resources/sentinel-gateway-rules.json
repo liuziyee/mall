@@ -1,0 +1,8 @@
+[
+  {
+    "resource": "lab-nacos-api",
+    "resourceMode": 1,
+    "count": 1,
+    "intervalSec": 1
+  }
+]

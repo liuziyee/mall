@@ -22,12 +22,28 @@ spring:
         port: 6060
       eager: true
       datasource: 
-        rules.file:
-          file: classpath:sentinel-gateway-rules.json
-          ruleType: gw-flow
-        apis.file:
-          file: classpath:sentinel-gateway-apis.json
-          ruleType: gw-api-group
+#        rules.file:
+#          file: classpath:sentinel-gateway-rules.json
+#          ruleType: gw-flow
+#        apis.file:
+#          file: classpath:sentinel-gateway-apis.json
+#          ruleType: gw-api-group
+        rules:
+          nacos:
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+            namespace: ${spring.cloud.nacos.discovery.namespace}
+            data-id: sentinel-gateway-rules
+            group: DEFAULT_GROUP
+            data-type: json
+            rule-type: gw-flow
+        apis:
+          nacos:
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+            namespace: ${spring.cloud.nacos.discovery.namespace}
+            data-id: sentinel-gateway-apis
+            group: DEFAULT_GROUP
+            data-type: json
+            rule-type: gw-api-group
           
   kafka:
     bootstrap-servers: 192.168.1.2:9092

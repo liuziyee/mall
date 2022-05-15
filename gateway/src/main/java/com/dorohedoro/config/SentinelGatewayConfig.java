@@ -63,7 +63,7 @@ public class SentinelGatewayConfig {
 
     @PostConstruct
     public void doInit() {
-        //log.info("load gateway flow rules by hard code...");
+        //log.info("config gateway flow rules by api...");
         //initCustomizeApis();
         //initGatewayRules();
 

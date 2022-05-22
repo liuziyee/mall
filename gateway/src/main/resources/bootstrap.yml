@@ -15,68 +15,73 @@ spring:
         metadata:
           management:
             context-path: ${server.servlet.context-path}/actuator
-    
-    sentinel:
-      transport:
-        dashboard: 192.168.1.2:9090
-        port: 6060
-      eager: true
-      datasource: 
-#        rules.file:
-#          file: classpath:sentinel-gateway-rules.json
-#          ruleType: gw-flow
-#        apis.file:
-#          file: classpath:sentinel-gateway-apis.json
-#          ruleType: gw-api-group
-        rules:
-          nacos:
-            server-addr: ${spring.cloud.nacos.discovery.server-addr}
-            namespace: ${spring.cloud.nacos.discovery.namespace}
-            data-id: sentinel-gateway-rules
-            group: DEFAULT_GROUP
-            data-type: json
-            rule-type: gw-flow
-        apis:
-          nacos:
-            server-addr: ${spring.cloud.nacos.discovery.server-addr}
-            namespace: ${spring.cloud.nacos.discovery.namespace}
-            data-id: sentinel-gateway-apis
-            group: DEFAULT_GROUP
-            data-type: json
-            rule-type: gw-api-group
-          
-  kafka:
-    bootstrap-servers: 192.168.1.2:9092
-    producer:
-      retries: 3
-    consumer:
-      auto-offset-reset: latest
-  
-  zipkin:
-    sender:
-      type: kafka
-    base-url: http://192.168.1.2:9411
-  
-  sleuth:
-    sampler:
-      rate: 10
-#      probability: 0.1
-
-  main:
-    allow-bean-definition-overriding: true
-
-nacos:
-  gateway:
-    route:
       config:
-        data-id: gateway-router
-        group: DEFAULT_GROUP
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-  endpoint:
-    health:
-      show-details: always
+        server-addr: 124.223.190.166:8848
+        namespace: cc126b3c-efbb-4a95-b617-d0c1c192496d
+        refresh-enabled: true
+        prefix: ${spring.application.name}
+        file-extension: yml
+#    sentinel:
+#      transport:
+#        dashboard: 192.168.1.2:9090
+#        port: 6060
+#      eager: true
+#      datasource: 
+##        rules.file:
+##          file: classpath:sentinel-gateway-rules.json
+##          ruleType: gw-flow
+##        apis.file:
+##          file: classpath:sentinel-gateway-apis.json
+##          ruleType: gw-api-group
+#        rules:
+#          nacos:
+#            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+#            namespace: ${spring.cloud.nacos.discovery.namespace}
+#            data-id: sentinel-gateway-rules
+#            group: DEFAULT_GROUP
+#            data-type: json
+#            rule-type: gw-flow
+#        apis:
+#          nacos:
+#            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+#            namespace: ${spring.cloud.nacos.discovery.namespace}
+#            data-id: sentinel-gateway-apis
+#            group: DEFAULT_GROUP
+#            data-type: json
+#            rule-type: gw-api-group
+#          
+#  kafka:
+#    bootstrap-servers: 192.168.1.2:9092
+#    producer:
+#      retries: 3
+#    consumer:
+#      auto-offset-reset: latest
+#  
+#  zipkin:
+#    sender:
+#      type: kafka
+#    base-url: http://192.168.1.2:9411
+#  
+#  sleuth:
+#    sampler:
+#      rate: 10
+##      probability: 0.1
+#
+#  main:
+#    allow-bean-definition-overriding: true
+#
+#nacos:
+#  gateway:
+#    route:
+#      config:
+#        data-id: gateway-router
+#        group: DEFAULT_GROUP
+#
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: '*'
+#  endpoint:
+#    health:
+#      show-details: always

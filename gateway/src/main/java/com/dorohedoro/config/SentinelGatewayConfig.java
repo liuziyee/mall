@@ -55,11 +55,11 @@ public class SentinelGatewayConfig {
         return new SentinelGatewayBlockExceptionHandler(viewResolvers, serverCodecConfigurer);
     }
 
-    @Bean
-    @Order(-1)
-    public GlobalFilter sentinelGatewayFilter() {
-        return new SentinelGatewayFilter();
-    }
+    //@Bean
+    //@Order(-1)
+    //public GlobalFilter sentinelGatewayFilter() {
+    //    return new SentinelGatewayFilter();
+    //}
 
     @PostConstruct
     public void doInit() {

@@ -1,9 +1,9 @@
 package com.dorohedoro.unit;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dorohedoro.entity.User;
 import com.dorohedoro.mapper.UserMapper;
@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Slf4j
 @SpringBootTest
@@ -63,10 +64,7 @@ public class MybatisPlusTest {
     
     @Test
     public void selectOneLambda() {
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(User::getUsername, "liuziye");
-
-        User user = userMapper.selectOne(wrapper);
+        User user = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getUsername, "liuziye"));
         log.info("user data: {}", JSON.toJSONString(user));
     }
     
@@ -91,6 +89,5 @@ public class MybatisPlusTest {
         userMapper.selectPageByExtraInfo(page, "qq");
         log.info("page data: {}", JSON.toJSONString(page));
     }
-    
     
 }

@@ -14,7 +14,6 @@ spring:
         namespace: cc126b3c-efbb-4a95-b617-d0c1c192496d
         metadata:
           management:
-            # 指定actuator端点的访问路径
             context-path: ${server.servlet.context-path}/actuator
 
   kafka:
@@ -28,7 +27,13 @@ spring:
     sender:
       type: kafka
     base-url: http://192.168.1.2:9411
-      
+    
+  redis:
+    host: 192.168.1.2
+    port: 6379
+    database: 0
+    
+  
 feign:
   compression:
     request:
@@ -44,8 +49,6 @@ feign:
   hystrix:
     enabled: true
 
-
-# 暴露端点
 management:
   endpoints:
     web:

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "lab",
+    "uri": "lb://lab",
+    "@uri": "lb://service id",
+    "order": 0,
+    "predicates": [
+      {
+        "args": {
+          "pattern": "/gateway/lab/**",
+          "@pattern": "/gateway是Gateway服务配置的context path,/nacos/**是Lab服务的访问URI"
+        },
+        "name": "Path"
+      }
+    ],
+    "filters": [
+      {
+        "name": "HeaderToken",
+        "@name": "xxx -> xxxGatewayFilterFactory"
+      },
+      {
+        "name": "StripPrefix",
+        "args": {
+          "parts": "1",
+          "@parts": "去掉/gateway,截取/nacos/**"
+        }
+      }
+    ]
+  },
+  {
+    "id": "auth",
+    "uri": "lb://auth",
+    "order": 5,
+    "predicates": [
+      {
+        "args": {
+          "pattern": "/gateway/auth/**"
+        },
+        "name": "Path"
+      }
+    ],
+    "filters": [
+      {
+        "name": "HeaderToken"
+      },
+      {
+        "name": "StripPrefix",
+        "args": {
+          "parts": "1"
+        }
+      }
+    ]
+  },
+  {
+    "id": "gateway",
+    "uri": "lb://gateway",
+    "order": 5,
+    "predicates": [
+      {
+        "args": {
+          "pattern": "/gateway/actuator/**"
+        },
+        "name": "Path"
+      }
+    ]
+  }
+]

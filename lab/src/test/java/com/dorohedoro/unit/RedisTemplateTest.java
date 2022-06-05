@@ -11,8 +11,6 @@ import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.UUID;
-
 @Slf4j
 @SpringBootTest
 @RunWith(SpringRunner.class)

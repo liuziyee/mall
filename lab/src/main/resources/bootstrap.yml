@@ -48,6 +48,12 @@ feign:
     enabled: false
   hystrix:
     enabled: true
+    
+oss:
+  service: minio
+  endpoint: http://124.223.190.166:9000
+  accessKey: kongfuchong
+  secretKey: kongfuchong1994
 
 management:
   endpoints:

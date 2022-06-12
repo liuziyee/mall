@@ -10,8 +10,8 @@ spring:
     nacos:
       discovery:
         enabled: true
-        server-addr: 124.223.190.166:8848
-        namespace: cc126b3c-efbb-4a95-b617-d0c1c192496d
+        server-addr: 192.168.1.2:8848
+        namespace: b7c36485-251f-46b0-b535-21f77c9ca5a0
         metadata:
           management:
             context-path: ${server.servlet.context-path}/actuator

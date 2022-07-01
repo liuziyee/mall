@@ -14,9 +14,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootTest
@@ -90,4 +90,19 @@ public class MybatisPlusTest {
         log.info("page data: {}", JSON.toJSONString(page));
     }
     
+    @Transactional
+    @Test
+    public void lock() throws Exception {
+        userMapper.writeLock();
+        TimeUnit.MINUTES.sleep(10);
+
+        User user = new User();
+        user.setUsername("jiaozi");
+        user.setPassword("jiaozi1994");
+        user.setExtraInfo("{}");
+        userMapper.insert(user);
+        log.info("user data: {}", JSON.toJSONString(user));
+
+        userMapper.unlock();
+    }
 }

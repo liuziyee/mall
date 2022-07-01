@@ -11,4 +11,12 @@
     <select id="selectPageByExtraInfo" resultType="user">
         select id, username, password, extra_info, create_time, update_time from user where extra_info like concat('%', #{keyword}, '%')
     </select>
+
+    <select id="writeLock">
+        LOCK TABLES user WRITE
+    </select>
+    <select id="unlock">
+        UNLOCK TABLES
+    </select>
+
 </mapper>

@@ -12,4 +12,9 @@ public interface UserMapper extends BaseMapper<User> {
     Map<String, Object> selectMapById(Long id);
 
     IPage<User> selectPageByExtraInfo(IPage<User> page, String keyword);
+
+    void writeLock();
+
+    void unlock();
+        
 }

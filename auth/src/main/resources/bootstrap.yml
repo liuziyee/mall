@@ -17,7 +17,7 @@ spring:
             context-path: ${server.servlet.context-path}/actuator
             
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/mall?aotuReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://127.0.0.1:3306/mall?aotuReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowMultiQueries=true
     username: root
     password: 12345
     type: com.zaxxer.hikari.HikariDataSource

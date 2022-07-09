@@ -8,10 +8,10 @@ import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@ServletComponentScan
-@EnableCircuitBreaker
-@EnableDiscoveryClient
-@EnableFeignClients
+//@ServletComponentScan
+//@EnableCircuitBreaker
+//@EnableDiscoveryClient
+//@EnableFeignClients
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 public class LabApplication {
     public static void main(String[] args) {

@@ -1,0 +1,40 @@
+package com.dorohedoro.unit;
+
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+@Slf4j
+@SpringBootTest
+@RunWith(SpringRunner.class)
+public class DateTimeTest {
+    
+    @Test
+    public void datetimeToStr() {
+        log.info("{}", new StringBuilder("20220101")
+                .insert(4, "-")
+                .insert(7, "-")
+                .append(" 00:00:00")
+                .toString());
+
+        log.info("{}", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+    }
+    
+    @Test
+    public void strToDatetimeToMilli() {
+        LocalDateTime datetime = LocalDateTime.parse(
+                "2022-01-01 00:00:00", 
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        log.info("{}", datetime.toInstant(ZoneOffset.of("+8")).toEpochMilli());
+    }
+}

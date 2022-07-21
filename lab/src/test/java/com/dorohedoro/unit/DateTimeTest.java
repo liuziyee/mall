@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -36,5 +37,14 @@ public class DateTimeTest {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         log.info("{}", datetime.toInstant(ZoneOffset.of("+8")).toEpochMilli());
+    }
+    
+    @Test
+    public void minAndMax() {
+        LocalDate date = LocalDate.parse("20220101", DateTimeFormatter.ofPattern("yyyyMMdd"));
+        LocalDateTime min = LocalDateTime.of(date, LocalTime.MIN);
+        LocalDateTime max = LocalDateTime.of(date, LocalTime.MAX);
+        log.info("{}", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(min));
+        log.info("{}", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(max));
     }
 }

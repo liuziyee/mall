@@ -8,7 +8,7 @@
       {
         "args": {
           "pattern": "/gateway/lab/**",
-          "@pattern": "/gateway是Gateway服务配置的context path,/nacos/**是Lab服务的访问URI"
+          "@pattern": "/gateway是Gateway服务配置的context path,/lab/**是Lab服务的访问URI"
         },
         "name": "Path"
       }
@@ -22,7 +22,7 @@
         "name": "StripPrefix",
         "args": {
           "parts": "1",
-          "@parts": "去掉/gateway,截取/nacos/**"
+          "@parts": "去掉/gateway,截取/lab/**"
         }
       }
     ]

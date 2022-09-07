@@ -16,5 +16,6 @@
     <modules>
         <module>business-config</module>
         <module>account</module>
+        <module>order</module>
     </modules>
 </project>

@@ -11,7 +11,7 @@
 
     <artifactId>actuator</artifactId>
 
-    <description>Actuator</description>
+    <description>监控</description>
     
     <dependencies>
         <dependency>

@@ -11,7 +11,7 @@
 
     <artifactId>mvc-config</artifactId>
 
-    <description>MVC通用配置模块</description>
+    <description>通用配置模块</description>
 
     <dependencies>
         <dependency>

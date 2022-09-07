@@ -11,7 +11,7 @@
 
     <artifactId>gateway</artifactId>
 
-    <description>Gateway</description>
+    <description>网关</description>
     
     <dependencies>
         <dependency>

@@ -11,7 +11,7 @@
 
     <artifactId>sentinel</artifactId>
 
-    <description>Sentinel</description>
+    <description>哨兵</description>
     
     <dependencies>
         <dependency>

@@ -10,7 +10,7 @@ public interface IAddressService {
     Long createAddress(Address address);
 
     List<AddressDTO> getAddressListByUID(Long uid);
-
+    
     AddressDTO getAddressById(Long id);
 
     List<AddressDTO> getAddressListByIds(List<Long> ids);

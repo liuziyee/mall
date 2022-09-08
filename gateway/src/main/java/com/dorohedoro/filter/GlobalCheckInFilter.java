@@ -51,7 +51,7 @@ public class GlobalCheckInFilter implements GlobalFilter, Ordered {
                 return response.setComplete();
             }
         } catch (Exception e) {
-            log.info("decrypt JWT error: {}", e.getMessage(), e);
+            log.error("decrypt JWT error: {}", e.getMessage(), e);
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }

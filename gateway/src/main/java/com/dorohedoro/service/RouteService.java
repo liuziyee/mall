@@ -43,7 +43,7 @@ public class RouteService implements ApplicationEventPublisherAware {
             log.info("add route info success: {}", JSON.toJSONString(routeInfo));
             return ResCode.success.getCode();
         } catch (Exception e) {
-            log.info("add route info error: {}", e.getMessage(), e);
+            log.error("add route info error: {}", e.getMessage(), e);
             return ResCode.add_route_fail.getCode();
         }
     }

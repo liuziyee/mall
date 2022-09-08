@@ -1,16 +1,13 @@
 package com.dorohedoro.dto;
 
-import com.dorohedoro.util.OrderStatus;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
-public class OrderDTO implements Serializable {
+public class OrderMsgDTO {
 
-    private Long id;
+    private Long orderId;
 
     private Long userId;
 
@@ -26,9 +23,7 @@ public class OrderDTO implements Serializable {
 
     private BigDecimal payAmount;
 
-    private OrderStatus status;
+    private String status;
 
-    private Date createTime;
-
-    private Date updateTime;
+    private Boolean isConfirmed;
 }

@@ -36,7 +36,7 @@ public class AddressServiceTest {
     @Test
     public void createAddress() {
         Address address = new Address();
-        address.setUid(UserContext.getUserData().getId());
+        address.setUserId(UserContext.getUserData().getId());
         address.setReceiverName("liuziye");
         address.setPhone("10000000000");
         address.setProvince("陕西");
@@ -50,7 +50,7 @@ public class AddressServiceTest {
     @Test
     public void getAddressByUID() {
         Long uid = UserContext.getUserData().getId();
-        List<AddressDTO> addressDTOList = addressService.getAddressListByUID(uid);
+        List<AddressDTO> addressDTOList = addressService.getAddressListByUserId(uid);
         log.info("address info by uid {}: {}", uid, JSON.toJSONString(addressDTOList));
     }
     

@@ -31,9 +31,9 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public List<AddressDTO> getAddressListByUID(Long uid) {
+    public List<AddressDTO> getAddressListByUserId(Long userId) {
         LambdaQueryWrapper<Address> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Address::getUid, uid);
+        wrapper.eq(Address::getUserId, userId);
 
         List<Address> addressList = addressMapper.selectList(wrapper);
         return BeanUtil.copyList(addressList, AddressDTO.class);

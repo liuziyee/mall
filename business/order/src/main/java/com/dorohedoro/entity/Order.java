@@ -3,20 +3,22 @@ package com.dorohedoro.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.dorohedoro.util.OrderStatus;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
+@TableName("`order`")
 public class Order implements Serializable {
 
     @TableId
     private Long id;
     
-    private Long uid;
+    private Long userId;
     
     private Long goodsId;
     
@@ -30,7 +32,7 @@ public class Order implements Serializable {
     
     private BigDecimal payAmount;
     
-    private String status;
+    private OrderStatus status;
 
     @TableField(fill = FieldFill.INSERT, select = false)
     private Date createTime;

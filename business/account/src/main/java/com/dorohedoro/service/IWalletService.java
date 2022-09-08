@@ -4,7 +4,7 @@ import com.dorohedoro.dto.WalletDTO;
 
 public interface IWalletService {
 
-    WalletDTO getBalanceByUID();
+    WalletDTO getBalanceByUserId();
 
     WalletDTO deductBalance(Long fee);
 }

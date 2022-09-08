@@ -13,7 +13,7 @@ public class Address {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     
-    private Long uid;
+    private Long userId;
     
     private String receiverName;
     

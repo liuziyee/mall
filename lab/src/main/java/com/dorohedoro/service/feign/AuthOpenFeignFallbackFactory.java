@@ -14,7 +14,7 @@ public class AuthOpenFeignFallbackFactory implements FallbackFactory<AuthOpenFei
     @Override
     public AuthOpenFeignService create(Throwable throwable) {
         log.warn("something goes wrong when calling login interface in auth service...");
-        log.warn("error info: {}", throwable.getMessage(), throwable);
+        log.warn(throwable.getMessage(), throwable);
 
         return (userDTO) -> new ResponseBean()
                 .setCode(ResCode.service_error.getCode())

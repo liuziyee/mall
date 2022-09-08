@@ -53,7 +53,7 @@ public class KafkaTest {
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
-                log.info("{}, {}", e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
         });
     }

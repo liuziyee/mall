@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class Wallet {
 
     @TableId(type = IdType.INPUT)
-    private Long uid;
+    private Long userId;
     
     private Long balance;
     

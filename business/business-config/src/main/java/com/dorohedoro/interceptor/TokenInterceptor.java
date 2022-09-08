@@ -29,7 +29,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             log.info("put user data into ThreadLocal: {}", userDTO);
             UserContext.setUserData(userDTO);
         } catch (Exception e) {
-            log.info("decrypt JWT error: {}", e.getMessage(), e);
+            log.error("decrypt JWT error: {}", e.getMessage(), e);
             throw new BizException(ResCode.unauthorized);
         }
         return true;

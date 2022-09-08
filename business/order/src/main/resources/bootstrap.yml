@@ -9,7 +9,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        enabled: true
+        enabled: false
         server-addr: 124.223.190.166:8848
         namespace: cc126b3c-efbb-4a95-b617-d0c1c192496d
         metadata:

@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: account # Service ID
+    name: account
   cloud:
     nacos:
       discovery:

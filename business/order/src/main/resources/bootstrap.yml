@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: order # Service ID
+    name: order
   cloud:
     nacos:
       discovery:

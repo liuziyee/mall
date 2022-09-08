@@ -15,7 +15,6 @@ import java.util.Collections;
 public class MybatisPlusGenerator implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        log.info("ping...");
         FastAutoGenerator.create(
                 "jdbc:mysql://127.0.0.1:3306/mall?aotuReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC",
                 "root",
@@ -28,9 +27,8 @@ public class MybatisPlusGenerator implements ApplicationListener<ContextRefreshe
                     builder.parent("com.dorohedoro")
                             .pathInfo(Collections.singletonMap(OutputFile.xml, "C://Users//liuzi//Desktop//mybatis-plus//com//dorohedoro"));
                 })
-                .strategyConfig(builder -> builder.addInclude("wallet"))
+                .strategyConfig(builder -> builder.addInclude("order"))
                 .templateEngine(new FreemarkerTemplateEngine())
                 .execute();
-        log.info("pong...");
     }
 }

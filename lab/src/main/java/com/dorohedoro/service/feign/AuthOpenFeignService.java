@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
-        value = "auth", // SERVICE ID
+        value = "auth",
         //fallback = AuthOpenFeignFallbackService.class
         fallbackFactory = AuthOpenFeignFallbackFactory.class
 )

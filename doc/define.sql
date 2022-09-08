@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `mall`.`order`  (
     `address_id` bigint(20) NOT NULL COMMENT '地址id',
     `deliveryman_id` bigint(20) NOT NULL COMMENT '骑手id',
     `settlement_id` bigint(20) NOT NULL COMMENT '结算id',
-    `reward_id` bigint(20) NOT NULL COMMENT '积分奖励id',
+    `reward_record_id` bigint(20) NOT NULL COMMENT '积分记录id',
     `pay_amount` decimal(10, 2) NOT NULL COMMENT '支付金额',
     `status` varchar(64) NOT NULL DEFAULT '' COMMENT '状态',
     `create_time` datetime NOT NULL DEFAULT '0000-01-01 00:00:00' COMMENT '创建时间',

@@ -6,7 +6,7 @@ import com.dorohedoro.dto.OrderMsgDTO;
 import com.dorohedoro.entity.Order;
 import com.dorohedoro.mapper.OrderMapper;
 import com.dorohedoro.service.IRabbitMQService;
-import com.dorohedoro.util.OrderStatus;
+import com.dorohedoro.enums.OrderStatus;
 import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
     private OrderMapper orderMapper;
 
     @Override
-    @Async("asyncExecutor")
+    @Async("executor")
     public void publish(String exchange, String routingKey, byte[] payload) {
         try {
             channel.basicPublish(exchange, routingKey, null, payload);

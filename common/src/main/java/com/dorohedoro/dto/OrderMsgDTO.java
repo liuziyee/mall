@@ -13,6 +13,8 @@ public class OrderMsgDTO {
 
     private Long goodsId;
 
+    private Long shopId;
+
     private Long addressId;
 
     private Long deliverymanId;

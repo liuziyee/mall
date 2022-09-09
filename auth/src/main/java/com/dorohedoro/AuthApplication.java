@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 //@EnableJpaAuditing
-//@MapperScan("com.dorohedoro.mapper")
 @EnableDiscoveryClient
 @SpringBootApplication
 public class AuthApplication {

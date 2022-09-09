@@ -17,5 +17,7 @@
         <module>business-config</module>
         <module>account</module>
         <module>order</module>
+        <module>shop</module>
+        <module>delivery</module>
     </modules>
 </project>

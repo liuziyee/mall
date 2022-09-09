@@ -1,4 +1,4 @@
-package com.dorohedoro.util;
+package com.dorohedoro.enums;
 
 public enum OrderStatus {
     CREATING, // 创建中

@@ -48,10 +48,11 @@ CREATE TABLE IF NOT EXISTS `mall`.`deliveryman` (
 INSERT INTO `deliveryman` VALUES (10,'张全蛋','AVAILABLE','2022-01-01 00:00:00','2022-01-01 00:00:00');
 
 DROP TABLE IF EXISTS `order`;
-CREATE TABLE IF NOT EXISTS `mall`.``  (
+CREATE TABLE IF NOT EXISTS `mall`.`order`  (
     `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '订单id',
     `user_id` bigint(20) NOT NULL COMMENT '用户id',
     `goods_id` bigint(20) NOT NULL COMMENT '商品id',
+    `shop_id` bigint(20) NOT NULL COMMENT '商家id',
     `address_id` bigint(20) NOT NULL COMMENT '地址id',
     `deliveryman_id` bigint(20) NOT NULL COMMENT '骑手id',
     `settlement_id` bigint(20) NOT NULL COMMENT '结算id',

@@ -1,11 +1,11 @@
 server:
   port: 10000
   servlet:
-    context-path: /order
+    context-path: /delivery
 
 spring:
   application:
-    name: order
+    name: delivery
   cloud:
     nacos:
       discovery:

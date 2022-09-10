@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -31,12 +32,26 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
     @Async("executor")
     public void publish(String exchange, String routingKey, byte[] payload) {
         try {
+            channel.confirmSelect(); // 置为确认模式
             channel.basicPublish(exchange, routingKey, null, payload);
+            // 同步确认
+            //channel.waitForConfirms();
+            // 异步确认
+            channel.addConfirmListener(new ConfirmListener() {
+                @Override
+                public void handleAck(long deliveryTag, boolean multiple) {
+                    log.info("[ACK] deliveryTag: {}, isMultipleACK(是否为批量确认): {}", deliveryTag, multiple);
+                }
+
+                @Override
+                public void handleNack(long deliveryTag, boolean multiple) {
+                    log.info("[NACK] deliveryTag: {}, isMultipleNACK(是否为批量确认): {}", deliveryTag, multiple);
+                }
+            });
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
-
 
     @PostConstruct
     public void init() throws IOException, TimeoutException {
@@ -44,7 +59,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         connectionFactory.setHost("110.40.136.113");
         connectionFactory.setUsername("root");
         connectionFactory.setPassword("root1994");
-        
+
         channel = connectionFactory.newConnection().createChannel();
         // 订单服务做为消费者要做的
         // 声明交换机和要监听的队列
@@ -66,7 +81,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 false,
                 null
         );
-        
+
         // 用来订单服务投递消息给结算服务
         channel.exchangeDeclare(
                 "exchange.order.to.settlement",
@@ -92,7 +107,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 false,
                 null
         );
-        
+
         channel.queueDeclare(
                 "queue.order",
                 true,
@@ -100,7 +115,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 false,
                 null
         );
-        
+
         channel.queueBind(
                 "queue.order",
                 "exchange.order.shop",
@@ -135,7 +150,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
 
             Long orderId = orderMsgDTO.getOrderId();
             Order order = orderMapper.selectById(orderId);
-            
+
             switch (order.getStatus()) {
                 case CREATING:
                     // 商家服务投递的消息
@@ -152,7 +167,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                         );
                         break;
                     }
-                    order.setStatus(OrderStatus.FAILED);    
+                    order.setStatus(OrderStatus.FAILED);
                     break;
                 case SHOP_CONFIRMED:
                     // 骑手服务投递的消息
@@ -207,6 +222,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         };
 
         // 监听队列
-        channel.basicConsume("queue.order", true, callback, consumerTag -> {});
+        channel.basicConsume("queue.order", true, callback, consumerTag -> {
+        });
     }
 }

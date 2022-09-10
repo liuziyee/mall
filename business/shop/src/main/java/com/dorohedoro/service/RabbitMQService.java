@@ -8,10 +8,8 @@ import com.dorohedoro.mapper.GoodsMapper;
 import com.dorohedoro.mapper.ShopMapper;
 import com.dorohedoro.enums.GoodsStatus;
 import com.dorohedoro.enums.ShopStatus;
-import com.rabbitmq.client.BuiltinExchangeType;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DeliverCallback;
+import com.rabbitmq.client.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +17,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
+@Slf4j
 @Service
 public class RabbitMQService {
 
@@ -74,15 +73,24 @@ public class RabbitMQService {
                 orderMsgDTO.setPayAmount(goods.getPrice());
                 orderMsgDTO.setIsConfirmed(true);
             }
-
+            
+            // 路由失败回调接口
+            channel.addReturnListener((replyCode, replyText, exchange, routingKey, properties, body) -> {
+                log.info("[ROUTE FAILED] code: {}, text: {}, exchange: {}, routingKey: {}, props: {}, body: {}",
+                        replyCode, replyText, exchange, routingKey, properties, new String(body));
+            });
             channel.basicPublish(
                     "exchange.order.shop",
                     "key.order",
+                    true, // 将路由失败的消息返回给发送方
                     null,
                     JSON.toJSONString(orderMsgDTO).getBytes()
             );
+
+            // 手动签收
+            channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
         };
         
-        channel.basicConsume("queue.shop", true, callback, consumerTag -> {});
+        channel.basicConsume("queue.shop", false, callback, consumerTag -> {});
     }
 }

@@ -20,5 +20,6 @@
         <module>shop</module>
         <module>delivery</module>
         <module>settlement</module>
+        <module>reward</module>
     </modules>
 </project>

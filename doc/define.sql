@@ -93,7 +93,6 @@ CREATE TABLE IF NOT EXISTS `mall`.`reward_record` (
     `amount` decimal(5, 2) NOT NULL COMMENT '积分数',
     `channel` varchar(64) NOT NULL COMMENT '渠道',
     `channel_id` bigint(20) NOT NULL COMMENT '渠道id',
-    `status` varchar(64) NULL DEFAULT NULL COMMENT '状态',
     `create_time` datetime NOT NULL DEFAULT '0000-01-01 00:00:00' COMMENT '创建时间',
     `update_time` datetime NOT NULL DEFAULT '0000-01-01 00:00:00' COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE

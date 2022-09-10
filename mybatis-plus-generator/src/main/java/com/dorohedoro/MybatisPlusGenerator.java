@@ -27,7 +27,7 @@ public class MybatisPlusGenerator implements ApplicationListener<ContextRefreshe
                     builder.parent("com.dorohedoro")
                             .pathInfo(Collections.singletonMap(OutputFile.xml, "C://Users//liuzi//Desktop//mybatis-plus//com//dorohedoro"));
                 })
-                .strategyConfig(builder -> builder.addInclude("settlement"))
+                .strategyConfig(builder -> builder.addInclude("reward_record"))
                 .templateEngine(new FreemarkerTemplateEngine())
                 .execute();
     }

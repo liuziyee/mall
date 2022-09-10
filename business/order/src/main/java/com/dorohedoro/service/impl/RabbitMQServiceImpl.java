@@ -84,6 +84,14 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 false,
                 null
         );
+
+        channel.exchangeDeclare(
+                "exchange.order.reward",
+                BuiltinExchangeType.TOPIC,
+                true,
+                false,
+                null
+        );
         
         channel.queueDeclare(
                 "queue.order",
@@ -111,6 +119,13 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 "queue.order",
                 "exchange.settlement.to.order",
                 "nothing",
+                null
+        );
+
+        channel.queueBind(
+                "queue.order",
+                "exchange.order.reward",
+                "key.order",
                 null
         );
 
@@ -167,7 +182,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                         // 投递消息给积分服务
                         channel.basicPublish(
                                 "exchange.order.reward",
-                                "",
+                                "key.reward",
                                 null,
                                 JSON.toJSONString(orderMsgDTO).getBytes()
                         );
@@ -176,9 +191,17 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                     order.setStatus(OrderStatus.FAILED);
                     break;
                 case SETTLEMENT_CONFIRMED:
+                    // 积分服务投递的消息
+                    if (orderMsgDTO.getRewardRecordId() != null) {
+                        // 更新订单状态和积分记录ID
+                        order.setStatus(OrderStatus.CREATED);
+                        order.setRewardRecordId(orderMsgDTO.getRewardRecordId());
+                        break;
+                    }
+                    order.setStatus(OrderStatus.FAILED);
                     break;
             }
-
+            // 订单数据落库
             LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery().eq(Order::getId, order.getId());
             orderMapper.update(order, wrapper);
         };

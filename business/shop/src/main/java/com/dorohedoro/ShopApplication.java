@@ -1,12 +1,11 @@
 package com.dorohedoro;
 
-import com.dorohedoro.entity.Order;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class OrderApplication {
+public class ShopApplication {
     public static void main(String[] args) {
-        SpringApplication.run(OrderApplication.class, args);
+        SpringApplication.run(ShopApplication.class, args);
     }
 }

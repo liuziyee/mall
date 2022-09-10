@@ -1,11 +1,11 @@
 server:
-  port: 20000
+  port: 40000
   servlet:
-    context-path: /shop
+    context-path: /settlement
 
 spring:
   application:
-    name: shop
+    name: settlement
   cloud:
     nacos:
       discovery:

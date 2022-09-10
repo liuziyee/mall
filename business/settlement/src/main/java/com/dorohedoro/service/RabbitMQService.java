@@ -2,18 +2,14 @@ package com.dorohedoro.service;
 
 import com.alibaba.fastjson.JSON;
 import com.dorohedoro.dto.OrderMsgDTO;
-import com.dorohedoro.entity.Goods;
-import com.dorohedoro.entity.Shop;
-import com.dorohedoro.mapper.GoodsMapper;
-import com.dorohedoro.mapper.ShopMapper;
-import com.dorohedoro.enums.GoodsStatus;
-import com.dorohedoro.enums.ShopStatus;
-import com.rabbitmq.client.BuiltinExchangeType;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DeliverCallback;
+import com.dorohedoro.entity.Settlement;
+import com.dorohedoro.enums.SettlementStatus;
+import com.dorohedoro.mapper.SettlementMapper;
+import com.dorohedoro.util.IDGenerator;
+import com.rabbitmq.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.IdGenerator;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -25,30 +21,37 @@ public class RabbitMQService {
     private Channel channel;
 
     @Autowired
-    private ShopMapper shopMapper;
+    private SettlementMapper settlementMapper;
 
-    @Autowired
-    private GoodsMapper goodsMapper;
-    
     @PostConstruct
     public void init() throws IOException, TimeoutException {
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("110.40.136.113");
         connectionFactory.setUsername("root");
         connectionFactory.setPassword("root1994");
-        
+
         channel = connectionFactory.newConnection().createChannel();
 
+        // 用来订单服务投递消息给结算服务
         channel.exchangeDeclare(
-                "exchange.order.shop",
-                BuiltinExchangeType.DIRECT,
+                "exchange.order.to.settlement",
+                BuiltinExchangeType.FANOUT,
+                true,
+                false,
+                null
+        );
+
+        // 用来结算服务投递消息给订单服务
+        channel.exchangeDeclare(
+                "exchange.settlement.to.order",
+                BuiltinExchangeType.FANOUT,
                 true,
                 false,
                 null
         );
 
         channel.queueDeclare(
-                "queue.shop",
+                "queue.settlement",
                 true,
                 false,
                 false,
@@ -56,33 +59,33 @@ public class RabbitMQService {
         );
 
         channel.queueBind(
-                "queue.shop",
-                "exchange.order.shop",
-                "key.shop",
+                "queue.settlement",
+                "exchange.order.to.settlement",
+                "nothing",
                 null
         );
 
         DeliverCallback callback = (consumerTag, message) -> {
             String payload = new String(message.getBody());
             OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
-
-            Shop shop = shopMapper.selectById(orderMsgDTO.getShopId());
-            Goods goods = goodsMapper.selectById(orderMsgDTO.getGoodsId());
+            // 生成结算记录
+            Settlement settlement = new Settlement();
+            settlement.setOrderId(orderMsgDTO.getOrderId());
+            settlement.setTransactionId(IDGenerator.nextId());
+            settlement.setPayAmount(orderMsgDTO.getPayAmount());
+            settlement.setStatus(SettlementStatus.DONE);
+            settlementMapper.insert(settlement);
             
-            orderMsgDTO.setIsConfirmed(false);
-            if (shop.getStatus().equals(ShopStatus.OPEN) && goods.getStatus().equals(GoodsStatus.AVAILABLE)) {
-                orderMsgDTO.setPayAmount(goods.getPrice());
-                orderMsgDTO.setIsConfirmed(true);
-            }
-
+            orderMsgDTO.setSettlementId(settlement.getId());
+            
             channel.basicPublish(
-                    "exchange.order.shop",
-                    "key.order",
+                    "exchange.settlement.to.order",
+                    "nothing",
                     null,
                     JSON.toJSONString(orderMsgDTO).getBytes()
             );
         };
         
-        channel.basicConsume("queue.shop", true, callback, consumerTag -> {});
+        channel.basicConsume("queue.settlement", true, callback, consumerTag -> {});
     }
 }

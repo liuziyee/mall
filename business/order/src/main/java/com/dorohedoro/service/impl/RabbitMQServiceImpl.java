@@ -1,6 +1,7 @@
 package com.dorohedoro.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.dto.OrderMsgDTO;
 import com.dorohedoro.entity.Order;
@@ -45,7 +46,11 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         connectionFactory.setPassword("root1994");
         
         channel = connectionFactory.newConnection().createChannel();
-
+        // 订单服务做为消费者要做的
+        // 声明交换机和要监听的队列
+        // 绑定队列到交换机
+        // 实现回调接口
+        // 监听队列
         channel.exchangeDeclare(
                 "exchange.order.shop",
                 BuiltinExchangeType.DIRECT,
@@ -54,6 +59,32 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 null
         );
 
+        channel.exchangeDeclare(
+                "exchange.order.delivery",
+                BuiltinExchangeType.DIRECT,
+                true,
+                false,
+                null
+        );
+        
+        // 用来订单服务投递消息给结算服务
+        channel.exchangeDeclare(
+                "exchange.order.to.settlement",
+                BuiltinExchangeType.FANOUT,
+                true,
+                false,
+                null
+        );
+
+        // 用来结算服务投递消息给订单服务
+        channel.exchangeDeclare(
+                "exchange.settlement.to.order",
+                BuiltinExchangeType.FANOUT,
+                true,
+                false,
+                null
+        );
+        
         channel.queueDeclare(
                 "queue.order",
                 true,
@@ -61,7 +92,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 false,
                 null
         );
-
+        
         channel.queueBind(
                 "queue.order",
                 "exchange.order.shop",
@@ -69,18 +100,17 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 null
         );
 
-        channel.exchangeDeclare(
+        channel.queueBind(
+                "queue.order",
                 "exchange.order.delivery",
-                BuiltinExchangeType.DIRECT,
-                true,
-                false,
+                "key.order",
                 null
         );
 
         channel.queueBind(
                 "queue.order",
-                "exchange.order.delivery",
-                "key.order",
+                "exchange.settlement.to.order",
+                "nothing",
                 null
         );
 
@@ -93,12 +123,12 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
             
             switch (order.getStatus()) {
                 case CREATING:
+                    // 商家服务投递的消息
                     if (orderMsgDTO.getIsConfirmed() && orderMsgDTO.getPayAmount() != null) {
                         // 更新订单状态和支付金额
                         order.setStatus(OrderStatus.SHOP_CONFIRMED);
                         order.setPayAmount(orderMsgDTO.getPayAmount());
-                        orderMapper.update(order, Wrappers.<Order>lambdaQuery().eq(Order::getId, order.getId()));
-                        
+                        // 投递消息给骑手服务
                         channel.basicPublish(
                                 "exchange.order.delivery",
                                 "key.delivery",
@@ -107,19 +137,50 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                         );
                         break;
                     }
-                    order.setStatus(OrderStatus.FAILED);
+                    order.setStatus(OrderStatus.FAILED);    
                     break;
                 case SHOP_CONFIRMED:
+                    // 骑手服务投递的消息
+                    if (orderMsgDTO.getDeliverymanId() != null) {
+                        // 更新订单状态和骑手ID
+                        order.setStatus(OrderStatus.DELIVERYMAN_CONFIRMED);
+                        order.setDeliverymanId(orderMsgDTO.getDeliverymanId());
+                        LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery().eq(Order::getId, order.getId());
+                        orderMapper.update(order, wrapper);
+                        // 投递消息给结算服务
+                        channel.basicPublish(
+                                "exchange.order.to.settlement",
+                                "nothing",
+                                null,
+                                JSON.toJSONString(orderMsgDTO).getBytes()
+                        );
+                        break;
+                    }
+                    order.setStatus(OrderStatus.FAILED);
                     break;
                 case DELIVERYMAN_CONFIRMED:
+                    // 结算服务投递的消息
+                    if (orderMsgDTO.getSettlementId() != null) {
+                        // 更新订单状态和结算ID
+                        order.setStatus(OrderStatus.SETTLEMENT_CONFIRMED);
+                        order.setSettlementId(orderMsgDTO.getSettlementId());
+                        // 投递消息给积分服务
+                        channel.basicPublish(
+                                "exchange.order.reward",
+                                "",
+                                null,
+                                JSON.toJSONString(orderMsgDTO).getBytes()
+                        );
+                        break;
+                    }
+                    order.setStatus(OrderStatus.FAILED);
                     break;
                 case SETTLEMENT_CONFIRMED:
                     break;
-                case CREATED:
-                    break;
-                case FAILED:
-                    break;
             }
+
+            LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery().eq(Order::getId, order.getId());
+            orderMapper.update(order, wrapper);
         };
 
         // 监听队列

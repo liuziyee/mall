@@ -9,7 +9,6 @@ import com.dorohedoro.util.IDGenerator;
 import com.rabbitmq.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.IdGenerator;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -18,6 +17,7 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class RabbitMQService {
 
+    @Autowired
     private Channel channel;
 
     @Autowired
@@ -25,13 +25,6 @@ public class RabbitMQService {
 
     @PostConstruct
     public void init() throws IOException, TimeoutException {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("110.40.136.113");
-        connectionFactory.setUsername("root");
-        connectionFactory.setPassword("root1994");
-
-        channel = connectionFactory.newConnection().createChannel();
-
         // 用来订单服务投递消息给结算服务
         channel.exchangeDeclare(
                 "exchange.order.to.settlement",
@@ -75,9 +68,9 @@ public class RabbitMQService {
             settlement.setPayAmount(orderMsgDTO.getPayAmount());
             settlement.setStatus(SettlementStatus.DONE);
             settlementMapper.insert(settlement);
-            
+
             orderMsgDTO.setSettlementId(settlement.getId());
-            
+
             channel.basicPublish(
                     "exchange.settlement.to.order",
                     "nothing",
@@ -85,7 +78,8 @@ public class RabbitMQService {
                     JSON.toJSONString(orderMsgDTO).getBytes()
             );
         };
-        
-        channel.basicConsume("queue.settlement", true, callback, consumerTag -> {});
+
+        channel.basicConsume("queue.settlement", true, callback, consumerTag -> {
+        });
     }
 }

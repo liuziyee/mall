@@ -15,12 +15,15 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
 public class RabbitMQService {
 
+    @Autowired
     private Channel channel;
 
     @Autowired
@@ -28,16 +31,9 @@ public class RabbitMQService {
 
     @Autowired
     private GoodsMapper goodsMapper;
-    
+
     @PostConstruct
     public void init() throws IOException, TimeoutException {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("110.40.136.113");
-        connectionFactory.setUsername("root");
-        connectionFactory.setPassword("root1994");
-        
-        channel = connectionFactory.newConnection().createChannel();
-
         channel.exchangeDeclare(
                 "exchange.order.shop",
                 BuiltinExchangeType.DIRECT,
@@ -46,12 +42,15 @@ public class RabbitMQService {
                 null
         );
 
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-message-ttl", 10000); // 设置队列TTL
+
         channel.queueDeclare(
                 "queue.shop",
                 true,
                 false,
                 false,
-                null
+                args
         );
 
         channel.queueBind(
@@ -62,35 +61,47 @@ public class RabbitMQService {
         );
 
         DeliverCallback callback = (consumerTag, message) -> {
-            String payload = new String(message.getBody());
-            OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
+            Long deliveryTag = message.getEnvelope().getDeliveryTag();
+            try {
+                String payload = new String(message.getBody());
+                OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
 
-            Shop shop = shopMapper.selectById(orderMsgDTO.getShopId());
-            Goods goods = goodsMapper.selectById(orderMsgDTO.getGoodsId());
-            
-            orderMsgDTO.setIsConfirmed(false);
-            if (shop.getStatus().equals(ShopStatus.OPEN) && goods.getStatus().equals(GoodsStatus.AVAILABLE)) {
-                orderMsgDTO.setPayAmount(goods.getPrice());
-                orderMsgDTO.setIsConfirmed(true);
+                Shop shop = shopMapper.selectById(orderMsgDTO.getShopId());
+                Goods goods = goodsMapper.selectById(orderMsgDTO.getGoodsId());
+
+                orderMsgDTO.setIsConfirmed(false);
+                if (shop.getStatus().equals(ShopStatus.OPEN) && goods.getStatus().equals(GoodsStatus.AVAILABLE)) {
+                    orderMsgDTO.setPayAmount(goods.getPrice());
+                    orderMsgDTO.setIsConfirmed(true);
+                }
+
+                // 路由失败回调接口
+                channel.addReturnListener((replyCode, replyText, exchange, routingKey, properties, body) -> {
+                    log.info("[ROUTE FAILED] code: {}, text: {}, exchange: {}, routingKey: {}, props: {}, body: {}",
+                            replyCode, replyText, exchange, routingKey, properties, new String(body));
+                });
+                channel.basicPublish(
+                        "exchange.order.shop",
+                        "key.order",
+                        true, // 将路由失败的消息返回给发送方
+                        null,
+                        JSON.toJSONString(orderMsgDTO).getBytes()
+                );
+                
+                // 手动签收
+                channel.basicAck(deliveryTag, false);
+
+                // 一次签收多条
+                //if (Math.floorMod(deliveryTag, 5) == 0) {
+                //    channel.basicAck(deliveryTag, true);
+                //}
+            } catch (Exception e) {
+                // 重回队列
+                channel.basicNack(deliveryTag, false, true);
             }
-            
-            // 路由失败回调接口
-            channel.addReturnListener((replyCode, replyText, exchange, routingKey, properties, body) -> {
-                log.info("[ROUTE FAILED] code: {}, text: {}, exchange: {}, routingKey: {}, props: {}, body: {}",
-                        replyCode, replyText, exchange, routingKey, properties, new String(body));
-            });
-            channel.basicPublish(
-                    "exchange.order.shop",
-                    "key.order",
-                    true, // 将路由失败的消息返回给发送方
-                    null,
-                    JSON.toJSONString(orderMsgDTO).getBytes()
-            );
-
-            // 手动签收
-            channel.basicAck(message.getEnvelope().getDeliveryTag(), false);
         };
-        
+
+        //channel.basicQos(3);
         channel.basicConsume("queue.shop", false, callback, consumerTag -> {});
     }
 }

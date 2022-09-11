@@ -16,13 +16,12 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Service
 public class RabbitMQServiceImpl implements IRabbitMQService {
-
+    
+    @Autowired
     private Channel channel;
 
     @Autowired
@@ -30,37 +29,28 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
 
     @Override
     @Async("executor")
-    public void publish(String exchange, String routingKey, byte[] payload) {
+    public void publish(String exchange, String routingKey, Long ttl, byte[] payload) {
         try {
             channel.confirmSelect(); // 置为确认模式
-            channel.basicPublish(exchange, routingKey, null, payload);
+            
+            AMQP.BasicProperties props = null;
+            if (ttl != null) {
+                props = new AMQP.BasicProperties
+                        .Builder()
+                        .expiration(String.valueOf(ttl))
+                        .build(); // 设置消息TTL
+            }
+            
+            channel.basicPublish(exchange, routingKey, props, payload);
             // 同步确认
             //channel.waitForConfirms();
-            // 异步确认
-            channel.addConfirmListener(new ConfirmListener() {
-                @Override
-                public void handleAck(long deliveryTag, boolean multiple) {
-                    log.info("[ACK] deliveryTag: {}, isMultipleACK(是否为批量确认): {}", deliveryTag, multiple);
-                }
-
-                @Override
-                public void handleNack(long deliveryTag, boolean multiple) {
-                    log.info("[NACK] deliveryTag: {}, isMultipleNACK(是否为批量确认): {}", deliveryTag, multiple);
-                }
-            });
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
     @PostConstruct
-    public void init() throws IOException, TimeoutException {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("110.40.136.113");
-        connectionFactory.setUsername("root");
-        connectionFactory.setPassword("root1994");
-
-        channel = connectionFactory.newConnection().createChannel();
+    public void init() throws IOException {
         // 订单服务做为消费者要做的
         // 声明交换机和要监听的队列
         // 绑定队列到交换机
@@ -220,6 +210,19 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
             LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery().eq(Order::getId, order.getId());
             orderMapper.update(order, wrapper);
         };
+
+        // 异步确认
+        channel.addConfirmListener(new ConfirmListener() {
+            @Override
+            public void handleAck(long deliveryTag, boolean multiple) {
+                log.info("[ACK] deliveryTag: {}, isMultipleACK: {}", deliveryTag, multiple);
+            }
+
+            @Override
+            public void handleNack(long deliveryTag, boolean multiple) {
+                log.info("[NACK] deliveryTag: {}, isMultipleNACK: {}", deliveryTag, multiple);
+            }
+        });
 
         // 监听队列
         channel.basicConsume("queue.order", true, callback, consumerTag -> {

@@ -23,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 @Service
 public class RabbitMQService {
 
+    @Autowired
     private Channel channel;
 
     @Autowired
@@ -30,13 +31,6 @@ public class RabbitMQService {
     
     @PostConstruct
     public void init() throws IOException, TimeoutException {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("110.40.136.113");
-        connectionFactory.setUsername("root");
-        connectionFactory.setPassword("root1994");
-        
-        channel = connectionFactory.newConnection().createChannel();
-
         channel.exchangeDeclare(
                 "exchange.order.delivery",
                 BuiltinExchangeType.DIRECT,

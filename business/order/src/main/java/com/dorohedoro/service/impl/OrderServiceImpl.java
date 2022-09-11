@@ -34,7 +34,8 @@ public class OrderServiceImpl implements IOrderService {
 
         rabbitMQService.publish(
                 "exchange.order.shop", 
-                "key.shop", 
+                "key.shop",
+                null,
                 JSON.toJSONString(orderMsgDTO).getBytes());
 
         return order.getId();

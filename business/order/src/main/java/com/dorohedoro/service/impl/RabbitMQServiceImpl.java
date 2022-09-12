@@ -49,7 +49,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
 
             channel.basicPublish(exchange, routingKey, props, payload);
             
-            Boolean isAck = channel.waitForConfirms(); // 同步确认
+            channel.waitForConfirms(); // 同步确认
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

@@ -33,7 +33,34 @@ public class RabbitMQService {
     private GoodsMapper goodsMapper;
 
     @PostConstruct
-    public void init() throws IOException, TimeoutException {
+    public void init() throws IOException {
+        // 配置死信队列要做的
+        // 声明死信交换机和死信队列
+        // 绑定
+        // 服务监听的队列设置参数
+        channel.exchangeDeclare(
+                "exchange.dlx",
+                BuiltinExchangeType.TOPIC,
+                true,
+                false,
+                null
+        );
+        
+        channel.queueDeclare(
+                "queue.dlx",
+                true,
+                false,
+                false,
+                null
+        );
+        
+        channel.queueBind(
+                "queue.dlx",
+                "exchange.dlx",
+                "#", // 通配，任意死信都会路由到死信队列
+                null
+        );
+        
         channel.exchangeDeclare(
                 "exchange.order.shop",
                 BuiltinExchangeType.DIRECT,
@@ -43,7 +70,9 @@ public class RabbitMQService {
         );
 
         Map<String, Object> args = new HashMap<>();
-        args.put("x-message-ttl", 10000); // 设置队列TTL
+        args.put("x-message-ttl", 60000); // 设置队列TTL
+        args.put("x-max-length", 5); // 设置最大队列长度
+        args.put("x-dead-letter-exchange", "exchange.dlx"); // 设置死信交换机
 
         channel.queueDeclare(
                 "queue.shop",
@@ -90,7 +119,7 @@ public class RabbitMQService {
                 
                 // 手动签收
                 channel.basicAck(deliveryTag, false);
-
+                
                 // 一次签收多条
                 //if (Math.floorMod(deliveryTag, 5) == 0) {
                 //    channel.basicAck(deliveryTag, true);

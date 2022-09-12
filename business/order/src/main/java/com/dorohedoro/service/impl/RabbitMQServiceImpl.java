@@ -51,12 +51,13 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
 
     @PostConstruct
     public void init() throws IOException {
+        log.info("RabbitMQServiceImpl init()...");
         // 订单服务做为消费者要做的
         // 声明交换机和要监听的队列
         // 绑定队列到交换机
         // 实现回调接口
         // 监听队列
-        channel.exchangeDeclare(
+        /*channel.exchangeDeclare(
                 "exchange.order.shop",
                 BuiltinExchangeType.DIRECT,
                 true,
@@ -132,7 +133,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 "exchange.order.reward",
                 "key.order",
                 null
-        );
+        );*/
 
         DeliverCallback callback = (consumerTag, message) -> {
             String payload = new String(message.getBody());

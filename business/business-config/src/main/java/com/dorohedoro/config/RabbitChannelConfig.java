@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 @Configuration
-public class RabbitMQConfig {
+public class RabbitChannelConfig {
     @Bean
     public Channel channel() throws IOException, TimeoutException {
         ConnectionFactory connectionFactory = new ConnectionFactory();

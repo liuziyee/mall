@@ -24,7 +24,7 @@ public class RabbitMQService {
     private SettlementMapper settlementMapper;
 
     @PostConstruct
-    public void init() throws IOException, TimeoutException {
+    public void init() throws IOException {
         // 用来订单服务投递消息给结算服务
         channel.exchangeDeclare(
                 "exchange.order.to.settlement",

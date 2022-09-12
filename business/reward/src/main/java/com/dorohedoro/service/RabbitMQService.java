@@ -23,7 +23,7 @@ public class RabbitMQService {
     private RewardRecordMapper rewardRecordMapper;
     
     @PostConstruct
-    public void init() throws IOException {
+    public void rabbitApiDeclare() throws IOException {
         channel.exchangeDeclare(
                 "exchange.order.reward",
                 BuiltinExchangeType.TOPIC,

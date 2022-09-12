@@ -63,7 +63,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
     }
 
     @PostConstruct
-    public void init() throws IOException {
+    public void rabbitApiDeclare() throws IOException {
         // 订单服务做为消费者要做的
         // 声明交换机和要监听的队列
         // 绑定队列到交换机

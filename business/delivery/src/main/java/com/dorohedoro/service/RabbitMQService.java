@@ -30,7 +30,7 @@ public class RabbitMQService {
     private DeliverymanMapper deliverymanMapper;
     
     @PostConstruct
-    public void init() throws IOException {
+    public void rabbitApiDeclare() throws IOException {
         channel.exchangeDeclare(
                 "exchange.order.delivery",
                 BuiltinExchangeType.DIRECT,

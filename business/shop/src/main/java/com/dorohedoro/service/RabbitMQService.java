@@ -33,7 +33,7 @@ public class RabbitMQService {
     private GoodsMapper goodsMapper;
 
     @PostConstruct
-    public void init() throws IOException {
+    public void rabbitApiDeclare() throws IOException {
         // 配置死信队列要做的
         // 声明死信交换机和死信队列
         // 绑定

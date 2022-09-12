@@ -69,7 +69,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         // 绑定队列到交换机
         // 实现回调接口
         // 监听队列
-        /*channel.exchangeDeclare(
+        channel.exchangeDeclare(
                 "exchange.order.shop",
                 BuiltinExchangeType.DIRECT,
                 true,
@@ -145,7 +145,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 "exchange.order.reward",
                 "key.order",
                 null
-        );*/
+        );
         
         DeliverCallback callback = (consumerTag, message) -> {
             String payload = new String(message.getBody());

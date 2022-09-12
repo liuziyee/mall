@@ -9,12 +9,11 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 
 @Slf4j
 @Configuration
 public class RabbitConfig {
-    
+
     // 声明式配置
     @Bean
     public ConnectionFactory connectionFactory() {
@@ -26,49 +25,49 @@ public class RabbitConfig {
         connectionFactory.createConnection();
         return connectionFactory;
     }
-    
+
     @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
         rabbitAdmin.setAutoStartup(true);
         return rabbitAdmin;
     }
-    
+
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         return new RabbitTemplate(connectionFactory);
     }
-    
+
     @Bean
     public Exchange exchange01() {
         return new DirectExchange("exchange.order.shop");
     }
-    
+
     @Bean
     public Exchange exchange02() {
         return new DirectExchange("exchange.order.delivery");
     }
-    
+
     @Bean
     public Exchange exchange03() {
         return new FanoutExchange("exchange.order.to.settlement"); // 用来订单服务投递消息给结算服务
     }
-    
+
     @Bean
     public Exchange exchange04() {
         return new FanoutExchange("exchange.settlement.to.order"); // 用来结算服务投递消息给订单服务
     }
-    
+
     @Bean
     public Exchange exchange05() {
         return new TopicExchange("exchange.order.reward");
     }
-    
+
     @Bean
     public Queue queue() {
         return new Queue("queue.order");
     }
-    
+
     @Bean
     public Binding binding01(@Qualifier("exchange01") Exchange exchange, Queue queue) {
         return BindingBuilder.bind(queue).to((DirectExchange) exchange).with("key.order");

@@ -10,6 +10,9 @@ import com.dorohedoro.service.IRabbitMQService;
 import com.dorohedoro.enums.OrderStatus;
 import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -27,31 +30,40 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
     @Autowired
     private OrderMapper orderMapper;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     @Override
     @Async("executor")
-    public void publish(String exchange, String routingKey, Long ttl, byte[] payload) {
+    public void rabbitApiPublish(String exchange, String routingKey, Long ttl, byte[] payload) {
         try {
             channel.confirmSelect(); // 置为确认模式
-            
+
             AMQP.BasicProperties props = null;
             if (ttl != null) {
                 props = new AMQP.BasicProperties
                         .Builder()
-                        .expiration(String.valueOf(ttl))
-                        .build(); // 设置消息TTL
+                        .expiration(String.valueOf(ttl)) // 设置消息TTL
+                        .build();
             }
-            
+
             channel.basicPublish(exchange, routingKey, props, payload);
-            // 同步确认
-            //channel.waitForConfirms();
+            
+            Boolean isAck = channel.waitForConfirms(); // 同步确认
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
+    @Override
+    public void rabbitTemplatePublish(String exchange, String routingKey, Long ttl, byte[] payload) {
+        MessageProperties msgProps = new MessageProperties();
+        Message msg = new Message(payload, msgProps);
+        rabbitTemplate.send(exchange, routingKey, msg);
+    }
+
     @PostConstruct
     public void init() throws IOException {
-        log.info("RabbitMQServiceImpl init()...");
         // 订单服务做为消费者要做的
         // 声明交换机和要监听的队列
         // 绑定队列到交换机
@@ -134,7 +146,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 "key.order",
                 null
         );*/
-
+        
         DeliverCallback callback = (consumerTag, message) -> {
             String payload = new String(message.getBody());
             OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
@@ -215,16 +227,12 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         // 异步确认
         channel.addConfirmListener(new ConfirmListener() {
             @Override
-            public void handleAck(long deliveryTag, boolean multiple) {
-                log.info("[ACK] deliveryTag: {}, isMultipleACK: {}", deliveryTag, multiple);
-            }
+            public void handleAck(long deliveryTag, boolean multiple) {}
 
             @Override
-            public void handleNack(long deliveryTag, boolean multiple) {
-                log.info("[NACK] deliveryTag: {}, isMultipleNACK: {}", deliveryTag, multiple);
-            }
+            public void handleNack(long deliveryTag, boolean multiple) {}
         });
-
+        
         // 监听队列
         channel.basicConsume("queue.order", true, callback, consumerTag -> {
         });

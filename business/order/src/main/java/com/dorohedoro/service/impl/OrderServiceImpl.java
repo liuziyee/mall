@@ -32,7 +32,7 @@ public class OrderServiceImpl implements IOrderService {
         OrderMsgDTO orderMsgDTO = BeanUtil.copy(order, OrderMsgDTO.class);
         orderMsgDTO.setOrderId(order.getId());
 
-        rabbitMQService.publish(
+        rabbitMQService.rabbitTemplatePublish(
                 "exchange.order.shop", 
                 "key.shop",
                 null,

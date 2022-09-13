@@ -22,7 +22,8 @@ public class RabbitConfig {
         connectionFactory.setPort(5672);
         connectionFactory.setUsername("root");
         connectionFactory.setPassword("root1994");
-        connectionFactory.createConnection();
+        connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED); // 发送方确认
+        connectionFactory.setPublisherReturns(true); // 消息返回
         return connectionFactory;
     }
 
@@ -35,7 +36,11 @@ public class RabbitConfig {
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        return new RabbitTemplate(connectionFactory);
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMandatory(true); // 将路由失败的消息返回给发送方
+        rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -> {}); // 消息返回回调接口
+        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> log.info("msgId: {}, ack: {}", correlationData.getId(), ack)); // 发送方确认回调接口
+        return rabbitTemplate;
     }
 
     @Bean

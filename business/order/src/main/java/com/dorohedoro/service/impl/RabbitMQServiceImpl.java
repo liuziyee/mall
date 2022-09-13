@@ -8,14 +8,17 @@ import com.dorohedoro.entity.Order;
 import com.dorohedoro.mapper.OrderMapper;
 import com.dorohedoro.service.IRabbitMQService;
 import com.dorohedoro.enums.OrderStatus;
+import com.dorohedoro.util.IDGenerator;
 import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.IdGenerator;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -56,10 +59,14 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
     }
 
     @Override
+    @Async("executor")
     public void rabbitTemplatePublish(String exchange, String routingKey, Long ttl, byte[] payload) {
         MessageProperties msgProps = new MessageProperties();
+        msgProps.setExpiration("15000");
         Message msg = new Message(payload, msgProps);
-        rabbitTemplate.send(exchange, routingKey, msg);
+        CorrelationData corrData = new CorrelationData();
+        corrData.setId(IDGenerator.nextId().toString());
+        rabbitTemplate.send(exchange, routingKey, msg, corrData);
     }
 
     @PostConstruct

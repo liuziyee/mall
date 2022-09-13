@@ -31,7 +31,7 @@ public class IDGenerator {
             this.machineId = machineId;
         }
 
-        public synchronized static long nextId() {
+        public synchronized static Long nextId() {
             long currStamp = getNewStamp();
             if (currStamp < lastStamp) {
                 throw new RuntimeException("Clock moved backwards.  Refusing to generate id");

@@ -104,7 +104,7 @@ public class RabbitMQService {
                     orderMsgDTO.setIsConfirmed(true);
                 }
 
-                // 路由失败回调接口
+                // 消息返回回调接口
                 channel.addReturnListener((replyCode, replyText, exchange, routingKey, properties, body) -> {
                     log.info("[ROUTE FAILED] code: {}, text: {}, exchange: {}, routingKey: {}, props: {}, body: {}",
                             replyCode, replyText, exchange, routingKey, properties, new String(body));

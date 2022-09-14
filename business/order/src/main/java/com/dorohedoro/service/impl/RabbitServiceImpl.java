@@ -5,17 +5,19 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dorohedoro.dto.OrderMsgDTO;
 import com.dorohedoro.entity.Order;
-import com.dorohedoro.mapper.OrderMapper;
-import com.dorohedoro.service.IRabbitMQService;
 import com.dorohedoro.enums.OrderStatus;
+import com.dorohedoro.mapper.OrderMapper;
+import com.dorohedoro.service.IRabbitService;
 import com.dorohedoro.util.IDGenerator;
 import com.dorohedoro.util.RabbitUtil;
 import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ import java.io.IOException;
 
 @Slf4j
 @Service
-public class RabbitMQServiceImpl implements IRabbitMQService {
+public class RabbitServiceImpl implements IRabbitService {
 
     @Autowired
     private Channel channel;
@@ -65,11 +67,14 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         rabbitTemplate.send(exchange, routingKey, msg, corrData);
     }
 
-
     @Override
-    public void handleMessage(byte[] payload) {
+    @RabbitListener(
+            containerFactory = "rabbitListenerContainerFactory",
+            queues = "queue.order" // 监听队列
+    )
+    public void handleMessage(@Payload Message message) {
+        byte[] payload = message.getBody();
         OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
-
         Long orderId = orderMsgDTO.getOrderId();
         Order order = orderMapper.selectById(orderId);
 
@@ -150,7 +155,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         // 订单服务做为消费者要做的
         // 声明交换机和要监听的队列
         // 绑定队列到交换机
-        // 实现回调接口
+        // 实现监听队列回调接口
         // 监听队列
         channel.exchangeDeclare(
                 "exchange.order.shop",

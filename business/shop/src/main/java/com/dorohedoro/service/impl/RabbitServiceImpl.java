@@ -1,4 +1,4 @@
-package com.dorohedoro.service;
+package com.dorohedoro.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.dorohedoro.dto.OrderMsgDTO;
@@ -8,6 +8,7 @@ import com.dorohedoro.mapper.GoodsMapper;
 import com.dorohedoro.mapper.ShopMapper;
 import com.dorohedoro.enums.GoodsStatus;
 import com.dorohedoro.enums.ShopStatus;
+import com.dorohedoro.service.IRabbitService;
 import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class RabbitMQService {
+public class RabbitServiceImpl implements IRabbitService {
 
     @Autowired
     private Channel channel;
@@ -31,12 +32,15 @@ public class RabbitMQService {
     @Autowired
     private GoodsMapper goodsMapper;
 
+    @Override
+    public void handleMessage(OrderMsgDTO orderMsgDTO) {}
+
     @PostConstruct
     public void rabbitApiDeclare() throws IOException {
         // 配置死信队列要做的
         // 声明死信交换机和死信队列
         // 绑定
-        // 服务监听的队列设置参数
+        // 服务监听的队列设置死信交换机
         channel.exchangeDeclare(
                 "exchange.dlx",
                 BuiltinExchangeType.TOPIC,
@@ -56,7 +60,7 @@ public class RabbitMQService {
         channel.queueBind(
                 "queue.dlx",
                 "exchange.dlx",
-                "#", // 通配，任意死信都会路由到死信队列
+                "#", // 通配，任意死信都会路由到该死信队列
                 null
         );
         

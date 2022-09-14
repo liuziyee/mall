@@ -6,10 +6,9 @@ import com.dorohedoro.dto.OrderMsgDTO;
 import com.dorohedoro.entity.Order;
 import com.dorohedoro.mapper.OrderMapper;
 import com.dorohedoro.service.IOrderService;
-import com.dorohedoro.service.IRabbitMQService;
+import com.dorohedoro.service.IRabbitService;
 import com.dorohedoro.util.BeanUtil;
 import com.dorohedoro.enums.OrderStatus;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class OrderServiceImpl implements IOrderService {
     private OrderMapper orderMapper;
 
     @Autowired
-    private IRabbitMQService rabbitMQService;
+    private IRabbitService rabbitService;
 
     @Override
     public Long createOrder(OrderDTO orderDTO) {
@@ -32,7 +31,7 @@ public class OrderServiceImpl implements IOrderService {
         OrderMsgDTO orderMsgDTO = BeanUtil.copy(order, OrderMsgDTO.class);
         orderMsgDTO.setOrderId(order.getId());
 
-        rabbitMQService.rabbitTemplatePublish(
+        rabbitService.rabbitTemplatePublish(
                 "exchange.order.shop", 
                 "key.shop",
                 null,

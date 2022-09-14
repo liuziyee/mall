@@ -130,7 +130,7 @@ public class RabbitMQService {
             }
         };
 
-        //channel.basicQos(3);
+        channel.basicQos(3);
         channel.basicConsume("queue.shop", false, callback, consumerTag -> {});
     }
 }

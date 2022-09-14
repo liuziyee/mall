@@ -1,11 +1,15 @@
 package com.dorohedoro.config;
 
+import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.api.ChannelAwareMessageListener;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +45,20 @@ public class RabbitConfig {
         rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -> {}); // 消息返回回调接口
         rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> log.info("msgId: {}, ack: {}", correlationData.getId(), ack)); // 发送方确认回调接口
         return rabbitTemplate;
+    }
+    
+    @Bean
+    public MessageListenerContainer simpleMessageListenerContainer(ConnectionFactory connectionFactory, Queue queue) {
+        SimpleMessageListenerContainer messageListenerContainer = new SimpleMessageListenerContainer(connectionFactory);
+        messageListenerContainer.addQueues(queue); // 设置监听队列
+        messageListenerContainer.setConcurrentConsumers(3); // 设置消费者数
+        messageListenerContainer.setMaxConcurrentConsumers(5);
+        messageListenerContainer.setAcknowledgeMode(AcknowledgeMode.MANUAL); // 手动签收
+        messageListenerContainer.setMessageListener((ChannelAwareMessageListener) (message, channel) -> {
+            log.info("msg: {}", message);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        });
+        return messageListenerContainer;
     }
 
     @Bean

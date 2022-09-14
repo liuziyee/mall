@@ -69,7 +69,6 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         rabbitTemplate.send(exchange, routingKey, msg, corrData);
     }
 
-    @PostConstruct
     public void rabbitApiDeclare() throws IOException {
         // 订单服务做为消费者要做的
         // 声明交换机和要监听的队列
@@ -241,7 +240,6 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         });
         
         // 监听队列
-        channel.basicConsume("queue.order", true, callback, consumerTag -> {
-        });
+        channel.basicConsume("queue.order", true, callback, consumerTag -> {});
     }
 }

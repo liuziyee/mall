@@ -9,24 +9,22 @@ import com.dorohedoro.mapper.OrderMapper;
 import com.dorohedoro.service.IRabbitMQService;
 import com.dorohedoro.enums.OrderStatus;
 import com.dorohedoro.util.IDGenerator;
+import com.dorohedoro.util.RabbitUtil;
 import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.util.IdGenerator;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 @Slf4j
 @Service
 public class RabbitMQServiceImpl implements IRabbitMQService {
-    
+
     @Autowired
     private Channel channel;
 
@@ -51,7 +49,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
             }
 
             channel.basicPublish(exchange, routingKey, props, payload);
-            
+
             channel.waitForConfirms(); // 同步确认
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -61,12 +59,91 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
     @Override
     @Async("executor")
     public void rabbitTemplatePublish(String exchange, String routingKey, Long ttl, byte[] payload) {
-        MessageProperties msgProps = new MessageProperties();
-        msgProps.setExpiration("15000");
-        Message msg = new Message(payload, msgProps);
+        Message msg = RabbitUtil.buildMessage(payload, ttl);
         CorrelationData corrData = new CorrelationData();
         corrData.setId(IDGenerator.nextId().toString());
         rabbitTemplate.send(exchange, routingKey, msg, corrData);
+    }
+
+
+    @Override
+    public void handleMessage(byte[] payload) {
+        OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
+
+        Long orderId = orderMsgDTO.getOrderId();
+        Order order = orderMapper.selectById(orderId);
+
+        CorrelationData corrData = new CorrelationData();
+        corrData.setId(IDGenerator.nextId().toString());
+
+        switch (order.getStatus()) {
+            case CREATING:
+                // 商家服务投递的消息
+                if (orderMsgDTO.getIsConfirmed() && orderMsgDTO.getPayAmount() != null) {
+                    // 更新订单状态和支付金额
+                    order.setStatus(OrderStatus.SHOP_CONFIRMED);
+                    order.setPayAmount(orderMsgDTO.getPayAmount());
+                    // 投递消息给骑手服务
+                    rabbitTemplate.send(
+                            "exchange.order.delivery",
+                            "key.delivery",
+                            RabbitUtil.buildMessage(payload, null),
+                            corrData
+                    );
+                    break;
+                }
+                order.setStatus(OrderStatus.FAILED);
+                break;
+            case SHOP_CONFIRMED:
+                // 骑手服务投递的消息
+                if (orderMsgDTO.getDeliverymanId() != null) {
+                    // 更新订单状态和骑手ID
+                    order.setStatus(OrderStatus.DELIVERYMAN_CONFIRMED);
+                    order.setDeliverymanId(orderMsgDTO.getDeliverymanId());
+                    LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery().eq(Order::getId, order.getId());
+                    orderMapper.update(order, wrapper);
+                    // 投递消息给结算服务
+                    rabbitTemplate.send(
+                            "exchange.order.to.settlement",
+                            "nothing",
+                            RabbitUtil.buildMessage(payload, null),
+                            corrData
+                    );
+                    break;
+                }
+                order.setStatus(OrderStatus.FAILED);
+                break;
+            case DELIVERYMAN_CONFIRMED:
+                // 结算服务投递的消息
+                if (orderMsgDTO.getSettlementId() != null) {
+                    // 更新订单状态和结算ID
+                    order.setStatus(OrderStatus.SETTLEMENT_CONFIRMED);
+                    order.setSettlementId(orderMsgDTO.getSettlementId());
+                    // 投递消息给积分服务
+                    rabbitTemplate.send(
+                            "exchange.order.reward",
+                            "key.reward",
+                            RabbitUtil.buildMessage(payload, null),
+                            corrData
+                    );
+                    break;
+                }
+                order.setStatus(OrderStatus.FAILED);
+                break;
+            case SETTLEMENT_CONFIRMED:
+                // 积分服务投递的消息
+                if (orderMsgDTO.getRewardRecordId() != null) {
+                    // 更新订单状态和积分记录ID
+                    order.setStatus(OrderStatus.CREATED);
+                    order.setRewardRecordId(orderMsgDTO.getRewardRecordId());
+                    break;
+                }
+                order.setStatus(OrderStatus.FAILED);
+                break;
+        }
+        // 订单数据落库
+        LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery().eq(Order::getId, order.getId());
+        orderMapper.update(order, wrapper);
     }
 
     public void rabbitApiDeclare() throws IOException {
@@ -152,9 +229,9 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                 "key.order",
                 null
         );
-        
+
         DeliverCallback callback = (consumerTag, message) -> {
-            String payload = new String(message.getBody());
+            byte[] payload = message.getBody();
             OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
 
             Long orderId = orderMsgDTO.getOrderId();
@@ -172,7 +249,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                                 "exchange.order.delivery",
                                 "key.delivery",
                                 null,
-                                JSON.toJSONString(orderMsgDTO).getBytes()
+                                payload
                         );
                         break;
                     }
@@ -191,7 +268,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                                 "exchange.order.to.settlement",
                                 "nothing",
                                 null,
-                                JSON.toJSONString(orderMsgDTO).getBytes()
+                                payload
                         );
                         break;
                     }
@@ -208,7 +285,7 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
                                 "exchange.order.reward",
                                 "key.reward",
                                 null,
-                                JSON.toJSONString(orderMsgDTO).getBytes()
+                                payload
                         );
                         break;
                     }
@@ -233,13 +310,16 @@ public class RabbitMQServiceImpl implements IRabbitMQService {
         // 异步确认
         channel.addConfirmListener(new ConfirmListener() {
             @Override
-            public void handleAck(long deliveryTag, boolean multiple) {}
+            public void handleAck(long deliveryTag, boolean multiple) {
+            }
 
             @Override
-            public void handleNack(long deliveryTag, boolean multiple) {}
+            public void handleNack(long deliveryTag, boolean multiple) {
+            }
         });
-        
+
         // 监听队列
-        channel.basicConsume("queue.order", true, callback, consumerTag -> {});
+        channel.basicConsume("queue.order", true, callback, consumerTag -> {
+        });
     }
 }

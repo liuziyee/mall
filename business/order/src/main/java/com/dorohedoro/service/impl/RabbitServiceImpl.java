@@ -68,10 +68,7 @@ public class RabbitServiceImpl implements IRabbitService {
     }
 
     @Override
-    @RabbitListener(
-            containerFactory = "rabbitListenerContainerFactory",
-            queues = "queue.order" // 监听队列
-    )
+    @RabbitListener(queues = "queue.order")
     public void handleMessage(@Payload Message message) {
         byte[] payload = message.getBody();
         OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
@@ -173,7 +170,7 @@ public class RabbitServiceImpl implements IRabbitService {
                 null
         );
 
-        // 用来订单服务投递消息给结算服务
+        // 用于订单服务投递消息给结算服务
         channel.exchangeDeclare(
                 "exchange.order.to.settlement",
                 BuiltinExchangeType.FANOUT,
@@ -182,7 +179,7 @@ public class RabbitServiceImpl implements IRabbitService {
                 null
         );
 
-        // 用来结算服务投递消息给订单服务
+        // 用于结算服务投递消息给订单服务
         channel.exchangeDeclare(
                 "exchange.settlement.to.order",
                 BuiltinExchangeType.FANOUT,

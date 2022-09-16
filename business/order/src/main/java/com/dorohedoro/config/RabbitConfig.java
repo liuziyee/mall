@@ -3,7 +3,10 @@ package com.dorohedoro.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.RabbitListenerContainerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +15,40 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 public class RabbitConfig {
+
+    @Bean
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setHost("110.40.136.113");
+        connectionFactory.setPort(5672);
+        connectionFactory.setUsername("root");
+        connectionFactory.setPassword("root1994");
+
+        connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED); // 发送方确认
+        connectionFactory.setPublisherReturns(true); // 消息返回
+
+        return connectionFactory;
+    }
+
+    @Bean
+    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        RabbitAdmin rabbitAdmin = new RabbitAdmin(connectionFactory);
+        rabbitAdmin.setAutoStartup(true);
+        return rabbitAdmin;
+    }
+
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+
+        rabbitTemplate.setMandatory(true); // 将路由失败的消息返回给发送方
+        rabbitTemplate.setReturnCallback((message, replyCode, replyText, exchange, routingKey) -> {
+        }); // 消息返回回调接口
+
+        rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> log.info("msgId: {}, ack: {}", correlationData.getId(), ack)); // 发送方确认回调接口
+        
+        return rabbitTemplate;
+    }
 
     @Bean
     RabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
@@ -48,13 +85,14 @@ public class RabbitConfig {
         msgListenerAdapter.setMessageConverter(msgConverter);
 
         msgListenerContainer.setMessageListener(msgListenerAdapter);
+        
         return msgListenerContainer;
     }*/
 
     // 声明式配置
     @Bean
     public Exchange exchange01() {
-        return new DirectExchange("exchange.order.shop");
+        return new DirectExchange("exchange.order.shop"); // 用于订单服务和商家服务之间收发消息
     }
 
     @Bean
@@ -64,12 +102,12 @@ public class RabbitConfig {
 
     @Bean
     public Exchange exchange03() {
-        return new FanoutExchange("exchange.order.to.settlement"); // 用来订单服务投递消息给结算服务
+        return new FanoutExchange("exchange.order.to.settlement"); // 用于订单服务投递消息给结算服务
     }
 
     @Bean
     public Exchange exchange04() {
-        return new FanoutExchange("exchange.settlement.to.order"); // 用来结算服务投递消息给订单服务
+        return new FanoutExchange("exchange.settlement.to.order"); // 用于结算服务投递消息给订单服务
     }
 
     @Bean

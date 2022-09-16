@@ -29,6 +29,12 @@ spring:
       connection-timeout: 30000
       max-lifetime: 45000
       auto-commit: true
+      
+  rabbitmq:
+    addresses: 110.40.136.113
+    port: 5672
+    username: root
+    password: root1994
 
 mybatis-plus:
   configuration:

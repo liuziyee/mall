@@ -4,17 +4,23 @@ import com.alibaba.fastjson.JSON;
 import com.dorohedoro.dto.OrderMsgDTO;
 import com.dorohedoro.entity.Goods;
 import com.dorohedoro.entity.Shop;
-import com.dorohedoro.mapper.GoodsMapper;
-import com.dorohedoro.mapper.ShopMapper;
 import com.dorohedoro.enums.GoodsStatus;
 import com.dorohedoro.enums.ShopStatus;
+import com.dorohedoro.mapper.GoodsMapper;
+import com.dorohedoro.mapper.ShopMapper;
 import com.dorohedoro.service.IRabbitService;
-import com.rabbitmq.client.*;
+import com.dorohedoro.util.RabbitUtil;
+import com.rabbitmq.client.BuiltinExchangeType;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DeliverCallback;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,10 +38,30 @@ public class RabbitServiceImpl implements IRabbitService {
     @Autowired
     private GoodsMapper goodsMapper;
 
-    @Override
-    public void handleMessage(OrderMsgDTO orderMsgDTO) {}
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
-    @PostConstruct
+    @Override
+    @RabbitListener(queues = "queue.shop")
+    public void handleMessage(@Payload Message message) {
+        OrderMsgDTO orderMsgDTO = JSON.parseObject(message.getBody(), OrderMsgDTO.class);
+
+        Shop shop = shopMapper.selectById(orderMsgDTO.getShopId());
+        Goods goods = goodsMapper.selectById(orderMsgDTO.getGoodsId());
+
+        orderMsgDTO.setIsConfirmed(false);
+        if (shop.getStatus().equals(ShopStatus.OPEN) && goods.getStatus().equals(GoodsStatus.AVAILABLE)) {
+            orderMsgDTO.setPayAmount(goods.getPrice());
+            orderMsgDTO.setIsConfirmed(true);
+        }
+
+        rabbitTemplate.send(
+                "exchange.order.shop",
+                "key.order",
+                RabbitUtil.buildMessage(orderMsgDTO, null),
+                null);
+    }
+
     public void rabbitApiDeclare() throws IOException {
         // 配置死信队列要做的
         // 声明死信交换机和死信队列
@@ -48,7 +74,7 @@ public class RabbitServiceImpl implements IRabbitService {
                 false,
                 null
         );
-        
+
         channel.queueDeclare(
                 "queue.dlx",
                 true,
@@ -56,14 +82,14 @@ public class RabbitServiceImpl implements IRabbitService {
                 false,
                 null
         );
-        
+
         channel.queueBind(
                 "queue.dlx",
                 "exchange.dlx",
                 "#", // 通配，任意死信都会路由到该死信队列
                 null
         );
-        
+
         channel.exchangeDeclare(
                 "exchange.order.shop",
                 BuiltinExchangeType.DIRECT,
@@ -119,10 +145,10 @@ public class RabbitServiceImpl implements IRabbitService {
                         null,
                         JSON.toJSONString(orderMsgDTO).getBytes()
                 );
-                
+
                 // 手动签收
                 channel.basicAck(deliveryTag, false);
-                
+
                 // 一次签收多条
                 //if (Math.floorMod(deliveryTag, 5) == 0) {
                 //    channel.basicAck(deliveryTag, true);
@@ -134,6 +160,7 @@ public class RabbitServiceImpl implements IRabbitService {
         };
 
         channel.basicQos(3);
-        channel.basicConsume("queue.shop", false, callback, consumerTag -> {});
+        channel.basicConsume("queue.shop", false, callback, consumerTag -> {
+        });
     }
 }

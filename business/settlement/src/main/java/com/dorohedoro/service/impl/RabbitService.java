@@ -1,21 +1,26 @@
-package com.dorohedoro.service;
+package com.dorohedoro.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.dorohedoro.dto.OrderMsgDTO;
 import com.dorohedoro.entity.Settlement;
 import com.dorohedoro.enums.SettlementStatus;
 import com.dorohedoro.mapper.SettlementMapper;
+import com.dorohedoro.service.IRabbitService;
 import com.dorohedoro.util.IDGenerator;
-import com.rabbitmq.client.*;
+import com.dorohedoro.util.RabbitUtil;
+import com.rabbitmq.client.BuiltinExchangeType;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DeliverCallback;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 @Service
-public class RabbitMQService {
+public class RabbitService implements IRabbitService {
 
     @Autowired
     private Channel channel;
@@ -23,9 +28,33 @@ public class RabbitMQService {
     @Autowired
     private SettlementMapper settlementMapper;
 
-    @PostConstruct
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Override
+    @RabbitListener(queues = "queue.settlement")
+    public void handleMessage(Message message) {
+        OrderMsgDTO orderMsgDTO = JSON.parseObject(message.getBody(), OrderMsgDTO.class);
+        
+        // 生成结算记录
+        Settlement settlement = new Settlement();
+        settlement.setOrderId(orderMsgDTO.getOrderId());
+        settlement.setTransactionId(IDGenerator.nextId());
+        settlement.setPayAmount(orderMsgDTO.getPayAmount());
+        settlement.setStatus(SettlementStatus.DONE);
+        settlementMapper.insert(settlement);
+
+        orderMsgDTO.setSettlementId(settlement.getId());
+
+        rabbitTemplate.send(
+                "exchange.settlement.to.order",
+                "nothing",
+                RabbitUtil.buildMessage(orderMsgDTO, null)
+        );
+    }
+
     public void rabbitApiDeclare() throws IOException {
-        // 用来订单服务投递消息给结算服务
+        // 用于订单服务投递消息给结算服务
         channel.exchangeDeclare(
                 "exchange.order.to.settlement",
                 BuiltinExchangeType.FANOUT,
@@ -34,7 +63,7 @@ public class RabbitMQService {
                 null
         );
 
-        // 用来结算服务投递消息给订单服务
+        // 用于结算服务投递消息给订单服务
         channel.exchangeDeclare(
                 "exchange.settlement.to.order",
                 BuiltinExchangeType.FANOUT,

@@ -37,7 +37,7 @@ public class RabbitService implements IRabbitService {
 
     @Override
     @RabbitListener(queues = "queue.delivery")
-    public void handleMessage(@Payload Message message) {
+    public void handleMessage(@Payload Message message, Channel channel) throws IOException {
         OrderMsgDTO orderMsgDTO = JSON.parseObject(message.getBody(), OrderMsgDTO.class);
 
         // 分配可用的骑手
@@ -54,6 +54,8 @@ public class RabbitService implements IRabbitService {
                 "key.order",
                 RabbitUtil.buildMessage(orderMsgDTO, null)
         );
+
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
     
     public void rabbitApiDeclare() throws IOException {

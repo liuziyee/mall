@@ -15,6 +15,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class RabbitService implements IRabbitService {
 
     @Override
     @RabbitListener(queues = "queue.settlement")
-    public void handleMessage(Message message) {
+    public void handleMessage(@Payload Message message, Channel channel) throws IOException {
         OrderMsgDTO orderMsgDTO = JSON.parseObject(message.getBody(), OrderMsgDTO.class);
         
         // 生成结算记录
@@ -51,6 +52,8 @@ public class RabbitService implements IRabbitService {
                 "nothing",
                 RabbitUtil.buildMessage(orderMsgDTO, null)
         );
+
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 
     public void rabbitApiDeclare() throws IOException {

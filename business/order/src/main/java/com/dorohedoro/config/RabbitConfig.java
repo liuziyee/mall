@@ -54,6 +54,7 @@ public class RabbitConfig {
     RabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
         SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory = new SimpleRabbitListenerContainerFactory();
         rabbitListenerContainerFactory.setConnectionFactory(connectionFactory);
+        rabbitListenerContainerFactory.setAcknowledgeMode(AcknowledgeMode.MANUAL); // 手动签收
         return rabbitListenerContainerFactory;
     }
     

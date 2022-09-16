@@ -13,7 +13,7 @@ import com.dorohedoro.util.RabbitUtil;
 import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.rabbit.annotation.*;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class RabbitServiceImpl implements IRabbitService {
 
     @Override
     @RabbitListener(queues = "queue.order")
-    public void handleMessage(@Payload Message message) {
+    public void handleMessage(@Payload Message message, Channel channel) throws IOException {
         byte[] payload = message.getBody();
         OrderMsgDTO orderMsgDTO = JSON.parseObject(payload, OrderMsgDTO.class);
         Long orderId = orderMsgDTO.getOrderId();
@@ -146,6 +146,8 @@ public class RabbitServiceImpl implements IRabbitService {
         // 订单数据落库
         LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery().eq(Order::getId, order.getId());
         orderMapper.update(order, wrapper);
+        
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false); // 手动签收
     }
 
     public void rabbitApiDeclare() throws IOException {

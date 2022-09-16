@@ -43,7 +43,7 @@ public class RabbitServiceImpl implements IRabbitService {
 
     @Override
     @RabbitListener(queues = "queue.shop")
-    public void handleMessage(@Payload Message message) {
+    public void handleMessage(@Payload Message message, Channel channel) throws IOException {
         OrderMsgDTO orderMsgDTO = JSON.parseObject(message.getBody(), OrderMsgDTO.class);
 
         Shop shop = shopMapper.selectById(orderMsgDTO.getShopId());
@@ -60,6 +60,8 @@ public class RabbitServiceImpl implements IRabbitService {
                 "key.order",
                 RabbitUtil.buildMessage(orderMsgDTO, null),
                 null);
+
+        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 
     public void rabbitApiDeclare() throws IOException {

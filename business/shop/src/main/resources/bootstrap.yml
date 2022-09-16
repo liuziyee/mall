@@ -35,6 +35,9 @@ spring:
     port: 5672
     username: root
     password: root1994
+    listener:
+      simple:
+        acknowledge-mode: manual
 
 mybatis-plus:
   configuration:

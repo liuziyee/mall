@@ -1,8 +1,6 @@
 package com.dorohedoro.controller;
 
-import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.dorohedoro.bean.ResponseBean;
-import com.dorohedoro.handler.GlobalBlockHandler;
 import com.dorohedoro.service.LabOpenFeignService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;

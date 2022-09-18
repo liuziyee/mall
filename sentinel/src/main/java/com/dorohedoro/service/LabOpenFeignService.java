@@ -1,12 +1,9 @@
 package com.dorohedoro.service;
 
 import com.dorohedoro.bean.ResponseBean;
-import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
 
 @FeignClient(
         value = "lab",

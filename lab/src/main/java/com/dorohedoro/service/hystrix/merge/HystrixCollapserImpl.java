@@ -5,7 +5,6 @@ import com.netflix.hystrix.HystrixCollapser;
 import com.netflix.hystrix.HystrixCollapserKey;
 import com.netflix.hystrix.HystrixCollapserProperties;
 import com.netflix.hystrix.HystrixCommand;
-import com.sun.xml.internal.ws.streaming.TidyXMLStreamReader;
 import org.springframework.cloud.client.ServiceInstance;
 
 import java.util.ArrayList;

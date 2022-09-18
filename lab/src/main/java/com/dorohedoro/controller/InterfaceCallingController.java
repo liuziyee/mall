@@ -2,9 +2,9 @@ package com.dorohedoro.controller;
 
 import com.dorohedoro.bean.ResponseBean;
 import com.dorohedoro.dto.UserDTO;
-import com.dorohedoro.service.feign.AuthOpenFeignService;
 import com.dorohedoro.service.RestTemplateService;
 import com.dorohedoro.service.RibbonService;
+import com.dorohedoro.service.feign.AuthOpenFeignService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

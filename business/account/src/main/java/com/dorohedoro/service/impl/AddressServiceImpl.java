@@ -1,20 +1,15 @@
 package com.dorohedoro.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.dorohedoro.constant.ResCode;
-import com.dorohedoro.context.UserContext;
 import com.dorohedoro.dto.AddressDTO;
-import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.entity.Address;
 import com.dorohedoro.exception.BizException;
 import com.dorohedoro.mapper.AddressMapper;
 import com.dorohedoro.service.IAddressService;
 import com.dorohedoro.util.BeanUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 

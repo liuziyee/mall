@@ -1,12 +1,16 @@
 package com.dorohedoro.unit;
 
-import io.minio.*;
+import io.minio.BucketExistsArgs;
+import io.minio.DownloadObjectArgs;
+import io.minio.MinioClient;
+import io.minio.UploadObjectArgs;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.time.Instant;
 
 @Slf4j

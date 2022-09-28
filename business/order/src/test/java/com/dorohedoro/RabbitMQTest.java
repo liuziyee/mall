@@ -1,4 +1,4 @@
-package com.dorohedoro.unit;
+package com.dorohedoro;
 
 import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;

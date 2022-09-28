@@ -1,4 +1,4 @@
-package com.dorohedoro.unit;
+package com.dorohedoro;
 
 import com.dorohedoro.constant.AuthConstant;
 import com.dorohedoro.entity.User;

@@ -1,4 +1,4 @@
-package com.dorohedoro.unit;
+package com.dorohedoro;
 
 import com.dorohedoro.dto.UserDTO;
 import lombok.extern.slf4j.Slf4j;

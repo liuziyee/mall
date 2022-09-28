@@ -16,16 +16,16 @@ public class MybatisPlusGenerator implements ApplicationListener<ContextRefreshe
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         FastAutoGenerator.create(
-                "jdbc:mysql://127.0.0.1:3306/mall?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC",
+                "jdbc:mysql://localhost:3306/mall?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC",
                 "root",
                 "12345")
                 .globalConfig(builder -> {
                     builder.author("liuziye")
-                            .outputDir("C://Users//liuzi//Desktop//mybatis-plus");
+                            .outputDir("C://mybatis-plus");
                 })
                 .packageConfig(builder -> {
                     builder.parent("com.dorohedoro")
-                            .pathInfo(Collections.singletonMap(OutputFile.xml, "C://Users//liuzi//Desktop//mybatis-plus//com//dorohedoro"));
+                            .pathInfo(Collections.singletonMap(OutputFile.xml, "C://mybatis-plus//com//dorohedoro"));
                 })
                 .strategyConfig(builder -> builder.addInclude("reward_record"))
                 .templateEngine(new FreemarkerTemplateEngine())

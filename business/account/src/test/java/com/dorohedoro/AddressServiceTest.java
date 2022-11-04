@@ -1,7 +1,7 @@
 package com.dorohedoro;
 
 import com.alibaba.fastjson.JSON;
-import com.dorohedoro.context.UserContext;
+import com.dorohedoro.util.UserContext;
 import com.dorohedoro.dto.AddressDTO;
 import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.entity.Address;

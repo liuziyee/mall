@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dorohedoro.constant.AuthConstant;
 import com.dorohedoro.constant.GatewayConstant;
 import com.dorohedoro.constant.ResCode;
-import com.dorohedoro.context.UserContext;
+import com.dorohedoro.util.UserContext;
 import com.dorohedoro.dto.UserDTO;
 import com.dorohedoro.exception.BizException;
 import com.dorohedoro.util.JWTUtil;

@@ -1,6 +1,7 @@
 package com.dorohedoro;
 
 import com.dorohedoro.dto.UserDTO;
+import com.dorohedoro.util.IDGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,8 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.BoundValueOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @SpringBootTest
@@ -36,5 +39,13 @@ public class RedisTemplateTest {
         hashOps.put("101", 3);
 
         log.info("entry: {}", hashOps.entries());
+    }
+    
+    @Test
+    public void hasKey() {
+        if (redisTemplate.hasKey("token")) {
+            redisTemplate.delete("token");
+        }
+        redisTemplate.opsForValue().set("token", IDGenerator.nextId(), 3, TimeUnit.DAYS);
     }
 }

@@ -37,7 +37,7 @@ public class RabbitServiceImpl implements IRabbitService {
     private RabbitTemplate rabbitTemplate;
 
     @Override
-    @Async("executor")
+    @Async("pool")
     public void rabbitApiPublish(String exchange, String routingKey, Long ttl, byte[] payload) {
         try {
             channel.confirmSelect(); // 置为确认模式
@@ -59,7 +59,7 @@ public class RabbitServiceImpl implements IRabbitService {
     }
 
     @Override
-    @Async("executor")
+    @Async("pool")
     public void rabbitTemplatePublish(String exchange, String routingKey, Long ttl, byte[] payload) {
         Message msg = RabbitUtil.buildMessage(payload, ttl);
         CorrelationData corrData = new CorrelationData();

@@ -15,7 +15,6 @@
         <module>auth</module>
         <module>gateway</module>
         <module>business</module>
-        <module>mybatis-plus-generator</module>
         <module>sentinel</module>
     </modules>
 
@@ -115,5 +114,4 @@
             </snapshots>
         </repository>
     </repositories>
-
 </project>

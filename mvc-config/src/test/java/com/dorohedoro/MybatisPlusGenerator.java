@@ -4,19 +4,22 @@ import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.OutputFile;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collections;
 
 @Slf4j
-@Component
-public class MybatisPlusGenerator implements ApplicationListener<ContextRefreshedEvent> {
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+@SpringBootTest
+@ExtendWith(SpringExtension.class)
+public class MybatisPlusGenerator {
+    
+    @Test
+    public void generate() {
         FastAutoGenerator.create(
-                "jdbc:mysql://localhost:3306/mall?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC",
+                "jdbc:mysql://localhost:3306/oa?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC",
                 "root",
                 "12345")
                 .globalConfig(builder -> {
@@ -27,7 +30,7 @@ public class MybatisPlusGenerator implements ApplicationListener<ContextRefreshe
                     builder.parent("com.dorohedoro")
                             .pathInfo(Collections.singletonMap(OutputFile.xml, "C://mybatis-plus//com//dorohedoro"));
                 })
-                .strategyConfig(builder -> builder.addInclude("reward_record"))
+                .strategyConfig(builder -> builder.addInclude())
                 .templateEngine(new FreemarkerTemplateEngine())
                 .execute();
     }

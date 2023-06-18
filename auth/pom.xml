@@ -11,7 +11,7 @@
 
     <artifactId>auth</artifactId>
 
-    <description>鉴权模块</description>
+    <description>授权模块</description>
 
     <dependencies>
         <dependency>

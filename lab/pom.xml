@@ -11,7 +11,7 @@
 
     <artifactId>lab</artifactId>
 
-    <description>实验室</description>
+    <description>沙盒</description>
 
     <dependencies>
         <dependency>

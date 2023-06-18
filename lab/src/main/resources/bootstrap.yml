@@ -23,7 +23,7 @@ spring:
             context-path: ${server.servlet.context-path}/actuator
 
   kafka:
-    bootstrap-servers: 192.168.1.2:9092
+    bootstrap-servers: 192.168.1.4:9092,192.168.1.4:9093
     producer:
       retries: 3
     consumer:
@@ -33,13 +33,13 @@ spring:
     sender:
       type: kafka
     base-url: http://192.168.1.2:9411
-    
+  
   redis:
-    host: 192.168.1.2
+    host: 192.168.10.185
     port: 6379
     database: 0
-    
-  
+
+
 feign:
   compression:
     request:
@@ -54,7 +54,7 @@ feign:
     enabled: false
   hystrix:
     enabled: true
-    
+
 oss:
   service: minio
   endpoint: http://124.223.190.166:9000

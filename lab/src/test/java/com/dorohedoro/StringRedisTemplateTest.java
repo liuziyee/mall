@@ -65,8 +65,8 @@ public class StringRedisTemplateTest {
         map.put("100", 1);
         map.put("101", 3);
         
-        stringRedisTemplate.opsForHash().putAll("cart:117", map);
-        Set keys = stringRedisTemplate.opsForHash().keys("cart:117");
-        log.info("keys: {}, values: {}", keys, stringRedisTemplate.opsForHash().multiGet("cart:117", keys));
+        stringRedisTemplate.opsForHash().putAll("nissin:117", map);
+        Set keys = stringRedisTemplate.opsForHash().keys("nissin:117");
+        log.info("keys: {}, values: {}", keys, stringRedisTemplate.opsForHash().multiGet("nissin:117", keys));
     }
 }
